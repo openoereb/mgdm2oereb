@@ -1,0 +1,1 @@
+- Katalog SH nutzen: https://github.com/openoereb/ch.sh.mgdm2oereb_supplement_katalog

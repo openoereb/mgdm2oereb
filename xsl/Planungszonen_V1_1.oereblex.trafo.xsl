@@ -1,0 +1,184 @@
+<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+                xmlns:ili="http://www.interlis.ch/INTERLIS2.3"
+                version="1.0">
+    <xsl:output method="xml" indent="yes" encoding="UTF-8"/>
+    <xsl:strip-space elements="*"/>
+    <xsl:param name="oereblex_documents_doc" select="document('file:///output/OeREBKRMtrsfr_V2_0.dokument.xtf')"/>
+    <xsl:param name="oereblex_authorities_doc" select="document('file:///output/OeREBKRMtrsfr_V2_0.amt.xtf')"/>
+    <xsl:param name="darstellungsdienst_doc" select="document('file:///trafo/Planungszonen_V1_1.katalog.darstellungsdienst.xml')"/>
+    <xsl:variable name="darstellungsdienst_tid" select="$darstellungsdienst_doc//DATASECTION/OeREBKRMtrsfr_V2_0.Transferstruktur.DarstellungsDienst[1]/@TID"/>
+    <xsl:param name="theme_code"/>
+    <xsl:param name="oereblex_host"/>
+    <xsl:variable name="oereblex_url" select="concat($oereblex_host,'/api/geolinks/')"/>
+    <xsl:template match="/ili:TRANSFER/ili:DATASECTION">
+        <TRANSFER xmlns="http://www.interlis.ch/INTERLIS2.3">
+            <HEADERSECTION SENDER="mgdm2oereb" VERSION="2.3">
+                <MODELS>
+                    <MODEL NAME="CoordSys" VERSION="2015-11-24" URI="https://www.interlis.ch/models"/>
+                    <MODEL NAME="CatalogueObjects_V1" VERSION="2011-08-30" URI="https://www.geo.admin.ch"/>
+                    <MODEL NAME="CatalogueObjectTrees_V1" VERSION="2011-08-30" URI="https://www.geo.admin.ch"/>
+                    <MODEL NAME="InternationalCodes_V1" VERSION="2011-08-30" URI="https://www.geo.admin.ch"/>
+                    <MODEL NAME="Localisation_V1" VERSION="2011-08-30" URI="https://www.geo.admin.ch"/>
+                    <MODEL NAME="LocalisationCH_V1" VERSION="2011-08-30" URI="https://www.geo.admin.ch"/>
+                    <MODEL NAME="Dictionaries_V1" VERSION="2011-08-30" URI="https://www.geo.admin.ch"/>
+                    <MODEL NAME="DictionariesCH_V1" VERSION="2011-08-30" URI="https://www.geo.admin.ch"/>
+                    <MODEL NAME="Units" VERSION="2012-02-20" URI="https://www.interlis.ch/models"/>
+                    <MODEL NAME="OeREBKRM_V2_0" VERSION="2021-04-14" URI="https://models.geo.admin.ch/V_D/OeREB/"/>
+                    <MODEL NAME="CHAdminCodes_V1" VERSION="2011-08-30" URI="https://www.geo.admin.ch"/>
+                    <MODEL NAME="AdministrativeUnits_V1" VERSION="2011-08-30" URI="https://www.geo.admin.ch"/>
+                    <MODEL NAME="AdministrativeUnitsCH_V1" VERSION="2011-08-30" URI="https://www.geo.admin.ch"/>
+                    <MODEL NAME="GeometryCHLV03_V1" VERSION="2015-11-12" URI="https://www.geo.admin.ch"/>
+                    <MODEL NAME="GeometryCHLV95_V1" VERSION="2015-11-12" URI="https://www.geo.admin.ch"/>
+                    <MODEL NAME="OeREBKRMkvs_V2_0" VERSION="2021-04-14" URI="https://models.geo.admin.ch/V_D/OeREB/"/>
+                    <MODEL NAME="OeREBKRMtrsfr_V2_0" VERSION="2021-04-14" URI="https://models.geo.admin.ch/V_D/OeREB/"/>
+                </MODELS>
+            </HEADERSECTION>
+            <DATASECTION>
+                <OeREBKRMtrsfr_V2_0.Transferstruktur BID="{$theme_code}">
+                    <xsl:apply-templates select="ili:Planungszonen_V1_1.Geobasisdaten"/>
+                    <xsl:apply-templates
+                            select="ili:Planungszonen_V1_1.TransferMetadaten/ili:Planungszonen_V1_1.TransferMetadaten.Amt"/>
+                    <xsl:copy-of select="$darstellungsdienst_doc//DATASECTION/OeREBKRMtrsfr_V2_0.Transferstruktur.DarstellungsDienst[1]"/>
+                    <xsl:copy-of select="$oereblex_authorities_doc//DATASECTION/OeREBKRM_V2_0.Amt.Amt"/>
+                    <xsl:copy-of select="$oereblex_documents_doc//DATASECTION/OeREBKRM_V2_0.Dokumente.Dokument"/>
+                    <xsl:apply-templates select="ili:Planungszonen_V1_1.Rechtsvorschriften"/>
+                    <xsl:apply-templates select="ili:Planungszonen_V1_1.Geobasisdaten/ili:Planungszonen_V1_1.Geobasisdaten.Geometrie_Dokument"/>
+                </OeREBKRMtrsfr_V2_0.Transferstruktur>
+            </DATASECTION>
+        </TRANSFER>
+    </xsl:template>
+    <xsl:template match="ili:Planungszonen_V1_1.Geobasisdaten">
+        <xsl:apply-templates select="ili:Planungszonen_V1_1.Geobasisdaten.Planungszone"/>
+        <xsl:apply-templates select="ili:Planungszonen_V1_1.Geobasisdaten.Typ_Planungszone"/>
+    </xsl:template>
+    <xsl:template match="ili:Planungszonen_V1_1.Geobasisdaten/ili:Planungszonen_V1_1.Geobasisdaten.Planungszone">
+        <OeREBKRMtrsfr_V2_0.Transferstruktur.Eigentumsbeschraenkung TID="eigentumsbeschraenkung_{@TID}">
+            <xsl:copy-of select="./ili:Rechtsstatus"/>
+            <xsl:copy-of select="./ili:publiziertAb"/>
+            <xsl:copy-of select="./ili:publiziertBis"/>
+            <xsl:call-template name="zustaendige_stelle">
+                <xsl:with-param name="basket_id" select="../@BID"/>
+            </xsl:call-template>
+            <xsl:call-template name="legende">
+                <xsl:with-param name="typ_ref_id" select="./ili:TypPZ/@REF"/>
+            </xsl:call-template>
+            <DarstellungsDienst REF="{$darstellungsdienst_tid}"/>
+        </OeREBKRMtrsfr_V2_0.Transferstruktur.Eigentumsbeschraenkung>
+        <OeREBKRMtrsfr_V2_0.Transferstruktur.Geometrie TID="geometrie_{@TID}">
+            <Flaeche>
+                <xsl:copy-of select="./ili:Geometrie/ili:SURFACE"/>
+            </Flaeche>
+            <xsl:copy-of select="./ili:Rechtsstatus"/>
+            <xsl:copy-of select="./ili:publiziertAb"/>
+            <xsl:copy-of select="./ili:publiziertBis"/>
+            <Eigentumsbeschraenkung REF="eigentumsbeschraenkung_{@TID}"/>
+        </OeREBKRMtrsfr_V2_0.Transferstruktur.Geometrie>
+    </xsl:template>
+
+    <xsl:template match="ili:Planungszonen_V1_1.Geobasisdaten/ili:Planungszonen_V1_1.Geobasisdaten.Typ_Planungszone">
+        <OeREBKRMtrsfr_V2_0.Transferstruktur.LegendeEintrag TID="Legende_{./@TID}">
+            <LegendeText>
+                <LocalisationCH_V1.MultilingualText>
+                    <LocalisedText>
+                        <LocalisationCH_V1.LocalisedText>
+                            <Language>de</Language>
+                            <Text>
+                                <xsl:value-of select="ili:Bezeichnung"/>
+                            </Text>
+                        </LocalisationCH_V1.LocalisedText>
+                        <LocalisationCH_V1.LocalisedText>
+                            <Language>fr</Language>
+                            <Text>
+                                <xsl:value-of select="ili:Bezeichnung"/>
+                            </Text>
+                        </LocalisationCH_V1.LocalisedText><LocalisationCH_V1.LocalisedText>
+                            <Language>it</Language>
+                            <Text>
+                                <xsl:value-of select="ili:Bezeichnung"/>
+                            </Text>
+                        </LocalisationCH_V1.LocalisedText><LocalisationCH_V1.LocalisedText>
+                            <Language>rm</Language>
+                            <Text>
+                                <xsl:value-of select="ili:Bezeichnung"/>
+                            </Text>
+                        </LocalisationCH_V1.LocalisedText>
+                    </LocalisedText>
+                </LocalisationCH_V1.MultilingualText>
+            </LegendeText>
+            <ArtCode><xsl:value-of select="./@TID"/></ArtCode>
+            <ArtCodeliste>http://Gemeinde.Kanton.andere</ArtCodeliste>
+            <xsl:copy-of select="./ili:Symbol"/>
+            <Thema><xsl:value-of select="$theme_code"/></Thema>
+            <DarstellungsDienst REF="{$darstellungsdienst_tid}"/>
+        </OeREBKRMtrsfr_V2_0.Transferstruktur.LegendeEintrag>
+    </xsl:template>
+
+    <xsl:template name="zustaendige_stelle">
+        <xsl:param name="basket_id"/>
+        <ZustaendigeStelle
+                REF="AMT_{../../ili:Planungszonen_V1_1.TransferMetadaten/ili:Planungszonen_V1_1.TransferMetadaten.Datenbestand/ili:BasketID[@OID=$basket_id]/../ili:zustaendigeStelle/@REF}"/>
+    </xsl:template>
+
+    <xsl:template name="legende">
+        <xsl:param name="typ_ref_id"/>
+        <Legende
+                REF="Legende_{../ili:Planungszonen_V1_1.Geobasisdaten.Typ_Planungszone[@TID=$typ_ref_id]/@TID}"/>
+    </xsl:template>
+
+    <xsl:template match="ili:Planungszonen_V1_1.MultilingualUri/ili:LocalisedText/ili:Planungszonen_V1_1.LocalisedUri">
+        <OeREBKRM_V2_0.LocalisedUri>
+            <Language>
+                <xsl:value-of select="./ili:Language"/>
+            </Language>
+            <Text>
+                <xsl:value-of select="./ili:Text"/>
+            </Text>
+        </OeREBKRM_V2_0.LocalisedUri>
+    </xsl:template>
+
+    <xsl:template match="ili:Planungszonen_V1_1.MultilingualUri">
+        <OeREBKRM_V2_0.MultilingualUri>
+            <LocalisedText>
+                <xsl:apply-templates select="ili:LocalisedText/ili:Planungszonen_V1_1.LocalisedUri"/>
+            </LocalisedText>
+        </OeREBKRM_V2_0.MultilingualUri>
+    </xsl:template>
+
+    <xsl:template match="ili:Planungszonen_V1_1.TransferMetadaten/ili:Planungszonen_V1_1.TransferMetadaten.Amt">
+        <OeREBKRM_V2_0.Amt.Amt TID="AMT_{./@TID}">
+            <xsl:copy-of select="./ili:Name"/>
+            <xsl:apply-templates select="ili:AmtImWeb"/>
+        </OeREBKRM_V2_0.Amt.Amt>
+    </xsl:template>
+
+    <xsl:template
+            match="ili:Planungszonen_V1_1.TransferMetadaten/ili:Planungszonen_V1_1.TransferMetadaten.Amt/ili:AmtImWeb">
+        <AmtImWeb>
+            <xsl:apply-templates select="ili:Planungszonen_V1_1.MultilingualUri"/>
+        </AmtImWeb>
+    </xsl:template>
+    <xsl:template match="ili:Planungszonen_V1_1.Rechtsvorschriften">
+        <xsl:apply-templates select="ili:Planungszonen_V1_1.Rechtsvorschriften.Dokument"/>
+    </xsl:template>
+    <xsl:template match="ili:Planungszonen_V1_1.Rechtsvorschriften/ili:Planungszonen_V1_1.Rechtsvorschriften.Dokument">
+        <xsl:variable name="mgdm_dokument_tid" select="@TID"/>
+        <xsl:variable name="mgdm_typ_pz_ref" select="../../ili:Planungszonen_V1_1.Geobasisdaten/ili:Planungszonen_V1_1.Geobasisdaten.TypPZ_Dokument[ili:Vorschrift/@REF=$mgdm_dokument_tid]/ili:TypPZ/@REF"/>
+        <xsl:variable name="geolink_url" select="./ili:TextImWeb/ili:Planungszonen_V1_1.MultilingualUri/ili:LocalisedText/ili:Planungszonen_V1_1.LocalisedUri[1]/ili:Text"/>
+        <xsl:variable name="geolink_url_id" select="substring-before(substring-after($geolink_url, $oereblex_url), '.')"/>
+        <xsl:for-each select="../../ili:Planungszonen_V1_1.Geobasisdaten/ili:Planungszonen_V1_1.Geobasisdaten.Planungszone[ili:TypPZ/@REF=$mgdm_typ_pz_ref]">
+            <xsl:variable name="mgdm_pz_tid" select="./@TID"/>
+            <xsl:for-each select="$oereblex_documents_doc//DATASECTION/GeoLink[@lexlink_id=$geolink_url_id]/Dokument">
+                <OeREBKRMtrsfr_V2_0.Transferstruktur.HinweisVorschrift>
+                    <Eigentumsbeschraenkung REF="eigentumsbeschraenkung_{$mgdm_pz_tid}"/>
+                    <Vorschrift REF="{./@REF}"/>
+                </OeREBKRMtrsfr_V2_0.Transferstruktur.HinweisVorschrift>
+            </xsl:for-each>
+        </xsl:for-each>
+    </xsl:template>
+    <xsl:template match="ili:Planungszonen_V1_1.Geobasisdaten/ili:Planungszonen_V1_1.Geobasisdaten.Geometrie_Dokument">
+        <OeREBKRMtrsfr_V2_0.Transferstruktur.HinweisVorschrift>
+            <Eigentumsbeschraenkung REF="eigentumsbeschraenkung_{./ili:Geometrie/@REF}"/>
+            <Vorschrift REF="{./ili:Dokument/@REF}"/>
+        </OeREBKRMtrsfr_V2_0.Transferstruktur.HinweisVorschrift>
+    </xsl:template>
+</xsl:stylesheet>

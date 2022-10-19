@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<DATASECTION>
+    <OeREBKRMtrsfr_V2_0.Transferstruktur.DarstellungsDienst TID="ch.BelasteteStandorte.oereb.darstellungsdienst_1">
+        <VerweisWMS>
+            <OeREBKRM_V2_0.MultilingualUri>
+                <LocalisedText>
+                    <OeREBKRM_V2_0.LocalisedUri>
+                        <Language>de</Language>
+                        <Text>https://geodienste.ch/db/kataster_belasteter_standorte_v1_5_0/deu?SERVICE=WMS&amp;REQUEST=GetMap&amp;VERSION=1.3.0&amp;LAYERS=kataster_belasteter_standorte&amp;STYLES=default&amp;CRS=EPSG:2056&amp;FORMAT=image/png</Text>
+                    </OeREBKRM_V2_0.LocalisedUri>
+                    <OeREBKRM_V2_0.LocalisedUri>
+                        <Language>fr</Language>
+                        <Text>https://geodienste.ch/db/kataster_belasteter_standorte_v1_5_0/fra?SERVICE=WMS&amp;REQUEST=GetMap&amp;VERSION=1.3.0&amp;LAYERS=cadastre_des_sites_pollues&amp;STYLES=default&amp;CRS=EPSG:2056&amp;FORMAT=image/png</Text>
+                    </OeREBKRM_V2_0.LocalisedUri>
+                    <OeREBKRM_V2_0.LocalisedUri>
+                        <Language>it</Language>
+                        <Text>https://geodienste.ch/db/kataster_belasteter_standorte_v1_5_0/ita?SERVICE=WMS&amp;REQUEST=GetMap&amp;VERSION=1.3.0&amp;LAYERS=catasto_dei_siti_inquinati&amp;STYLES=default&amp;CRS=EPSG:2056&amp;FORMAT=image/png</Text>
+                    </OeREBKRM_V2_0.LocalisedUri>
+                </LocalisedText>
+            </OeREBKRM_V2_0.MultilingualUri>
+        </VerweisWMS>
+    </OeREBKRMtrsfr_V2_0.Transferstruktur.DarstellungsDienst>
+</DATASECTION>
