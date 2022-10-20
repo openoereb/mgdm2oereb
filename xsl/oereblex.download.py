@@ -89,7 +89,7 @@ for geolink_id in oereblex_geolink_unique.keys():
         logging.info("Downloading {} ({}/{})".format(geolink_id, counter, count))
         request = requests.get(geolink)
         if request.status_code < 200 and request.status_code > 299:
-            raise IOError("Could download documents for {}"-format(geolink))
+            raise IOError("Could download documents for {}".format(geolink))
         logging.info("Successfully downloaded from {}".format(geolink))
         xml = request.text.encode(request.encoding)
         oereblex_dom = ET.fromstring(xml)
