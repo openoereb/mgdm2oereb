@@ -39,8 +39,6 @@ Alle folgenden Befehle setzen voraus, dass man sich im Projektordner befindet!
 docker build -t  mgdm2oereb-transformator:latest .
 ```
 
-#Transformationen
-
 ## Kataster der belasteten Standorte
 
 ### v1.5 ÖREBlex (Kt. SH)
