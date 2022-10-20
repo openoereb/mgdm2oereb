@@ -41,16 +41,44 @@ TODO
 
 ### v1.1 ÖREBlex
 
+#### GR
+
 ```bash
 docker run \
   --rm \
   -ti \
   -u $(id -u):$(id -g) \
-  -v $(pwd)/result:/output \
-  -v $(pwd)/xsl/planungszonen/v1.1.oereblex:/trafo \
-  -e DOWNLOAD_URL="https://www.geodienste.ch/downloads/interlis/planungszonen/SH/planungszonen_v1_1_SH_lv95.zip" \
-  mgdm2oereb-transformator:latest make clean download_mgdm unzip_mgdm clean_oereblex_xml oereblex2oereb_2_0_authorities oereblex2oereb_2_0_documents mgdm2oereb
+  -v $(pwd):/app \
+  -e MODEL="Planungszonen_V1_1" \
+  -e THEME_CODE="ch.Planungszonen" \
+  -e OEREBLEX_HOST="oereblex.gr.ch" \
+  -e XTF_PATH="/app/data/3668_2022-09-06_pz_neu.xtf" \
+  -e OEREBLEX_CANTON="gr" \
+  -e DUMMY_OFFICE_NAME="DUMMYOFFICE" \
+  -e DUMMY_OFFICE_URL="https://google.ch" \
+  mgdm2oereb-transformator:latest make clean clean_oereblex_xml mgdm2oereb
 ```
+
+#### SH
+
+```bash
+docker run \
+  --rm \
+  -ti \
+  -u $(id -u):$(id -g) \
+  -v $(pwd):/app \
+  -e MODEL="Planungszonen_V1_1" \
+  -e THEME_CODE="ch.Planungszonen" \
+  -e OEREBLEX_HOST="oereblex.sh.ch" \
+  -e XTF_PATH="/app/data/planungszonen_v1_1.xtf" \
+  -e OEREBLEX_CANTON="sh" \
+  -e DUMMY_OFFICE_NAME="DUMMYOFFICE" \
+  -e DUMMY_OFFICE_URL="https://google.ch" \
+  mgdm2oereb-transformator:latest make clean clean_oereblex_xml mgdm2oereb
+```
+
+Frische Daten können hier heruntergeladen werden:
+https://geodienste.ch/downloads/interlis/planungszonen/SH/planungszonen_v1_1_SH_lv95.zip
 
 ### v1.1
 

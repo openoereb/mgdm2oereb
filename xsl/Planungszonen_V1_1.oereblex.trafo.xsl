@@ -4,7 +4,7 @@
     <xsl:output method="xml" indent="yes" encoding="UTF-8"/>
     <xsl:strip-space elements="*"/>
     <xsl:param name="oereblexdata" select="document('file:///app/result/oereblex.xml')"/>
-    <xsl:param name="darstellungsdienst_doc" select="document('file:///trafo/Planungszonen_V1_1.katalog.darstellungsdienst.xml')"/>
+    <xsl:param name="darstellungsdienst_doc" select="document('file:///app/xsl/Planungszonen_V1_1.katalog.darstellungsdienst.xml')"/>
     <xsl:variable name="darstellungsdienst_tid" select="$darstellungsdienst_doc//DATASECTION/OeREBKRMtrsfr_V2_0.Transferstruktur.DarstellungsDienst[1]/@TID"/>
     <xsl:param name="theme_code"/>
     <xsl:param name="oereblex_host"/>
