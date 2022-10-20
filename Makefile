@@ -1,5 +1,6 @@
 
 XTF_PATH=data/$(XTF_FILE)
+CATALOG_PATH=$(shell pwd)/catalogs/$(CATALOG)
 
 result/oereblex.xml: xsl/oereblex.download.py
 	XTF_PATH="$(XTF_PATH)" \
@@ -14,8 +15,13 @@ result/oereblex.xml: xsl/oereblex.download.py
 
 clean_oereblex_xml: result/oereblex.xml
 
-result/OeREBKRMtrsfr_V2_0.xtf: xsl/$(MODEL).oereblex.trafo.xsl
+result/OeREBKRMtrsfr_V2_0.oereblex.xtf: xsl/$(MODEL).oereblex.trafo.xsl result/oereblex.xml
 	xsltproc --stringparam theme_code "$(THEME_CODE)" --stringparam oereblex_host "$(OEREBLEX_HOST)" --stringparam model "$(MODEL)" $^ $(XTF_PATH) > $@
+
+mgdm2oereb-oereblex: result/OeREBKRMtrsfr_V2_0.oereblex.xtf
+
+result/OeREBKRMtrsfr_V2_0.xtf: xsl/$(MODEL).trafo.xsl
+	xsltproc --stringparam theme_code "$(THEME_CODE)" --stringparam model "$(MODEL)" --stringparam catalog "$(CATALOG_PATH)" $^ $(XTF_PATH) > $@
 
 mgdm2oereb: result/OeREBKRMtrsfr_V2_0.xtf
 
