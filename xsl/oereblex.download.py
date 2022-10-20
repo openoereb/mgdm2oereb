@@ -285,6 +285,18 @@ for auth_key in uuid_authorities.keys():
             logging.info("adding standard authority for {}".format('.'.join([auth_key, "authority", language_key])))
             uuid_authorities[auth_key]["authority"][language_key] = dummy_office_name
 
+# minimal fix URL of authority because it might not ili valid
+for auth_key in uuid_authorities.keys():
+    for language_key in uuid_authorities[auth_key]["authority_url"].keys():
+        if not uuid_authorities[auth_key]["authority_url"][language_key].startswith('http'):
+            new_url = 'https://{}'.format(uuid_authorities[auth_key]["authority_url"][language_key])
+            logging.info("Fixing url from {} to {} for {}".format(
+                uuid_authorities[auth_key]["authority_url"][language_key],
+                new_url,
+                '.'.join([auth_key, "authority_url", language_key]))
+            )
+            uuid_authorities[auth_key]["authority_url"][language_key] = new_url
+
 logging.info("full tree is:\n" + json.dumps(flattened_documents, indent=2))
 logging.info("full tree is:\n" + json.dumps(uuid_authorities, indent=2))
 logging.info("full tree is:\n" + json.dumps(unique_join_mgdm_tid, indent=2))

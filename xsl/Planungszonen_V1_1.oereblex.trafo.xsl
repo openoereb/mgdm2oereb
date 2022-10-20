@@ -3,8 +3,7 @@
                 version="1.0">
     <xsl:output method="xml" indent="yes" encoding="UTF-8"/>
     <xsl:strip-space elements="*"/>
-    <xsl:param name="oereblex_documents_doc" select="document('file:///output/OeREBKRMtrsfr_V2_0.dokument.xtf')"/>
-    <xsl:param name="oereblex_authorities_doc" select="document('file:///output/OeREBKRMtrsfr_V2_0.amt.xtf')"/>
+    <xsl:param name="oereblexdata" select="document('file:///app/result/oereblex.xml')"/>
     <xsl:param name="darstellungsdienst_doc" select="document('file:///trafo/Planungszonen_V1_1.katalog.darstellungsdienst.xml')"/>
     <xsl:variable name="darstellungsdienst_tid" select="$darstellungsdienst_doc//DATASECTION/OeREBKRMtrsfr_V2_0.Transferstruktur.DarstellungsDienst[1]/@TID"/>
     <xsl:param name="theme_code"/>
@@ -39,9 +38,9 @@
                     <xsl:apply-templates
                             select="ili:Planungszonen_V1_1.TransferMetadaten/ili:Planungszonen_V1_1.TransferMetadaten.Amt"/>
                     <xsl:copy-of select="$darstellungsdienst_doc//DATASECTION/OeREBKRMtrsfr_V2_0.Transferstruktur.DarstellungsDienst[1]"/>
-                    <xsl:copy-of select="$oereblex_authorities_doc//DATASECTION/OeREBKRM_V2_0.Amt.Amt"/>
-                    <xsl:copy-of select="$oereblex_documents_doc//DATASECTION/OeREBKRM_V2_0.Dokumente.Dokument"/>
-                    <xsl:apply-templates select="ili:Planungszonen_V1_1.Rechtsvorschriften"/>
+                    <xsl:copy-of select="$oereblexdata//DATASECTION/OeREBKRM_V2_0.Amt.Amt"/>
+                    <xsl:copy-of select="$oereblexdata//DATASECTION/OeREBKRM_V2_0.Dokumente.Dokument"/>
+                    <xsl:apply-templates select="ili:Planungszonen_V1_1.Rechtsvorschriften/ili:Planungszonen_V1_1.Rechtsvorschriften.Dokument"/>
                     <xsl:apply-templates select="ili:Planungszonen_V1_1.Geobasisdaten/ili:Planungszonen_V1_1.Geobasisdaten.Geometrie_Dokument"/>
                 </OeREBKRMtrsfr_V2_0.Transferstruktur>
             </DATASECTION>
@@ -163,22 +162,28 @@
     <xsl:template match="ili:Planungszonen_V1_1.Rechtsvorschriften/ili:Planungszonen_V1_1.Rechtsvorschriften.Dokument">
         <xsl:variable name="mgdm_dokument_tid" select="@TID"/>
         <xsl:variable name="mgdm_typ_pz_ref" select="../../ili:Planungszonen_V1_1.Geobasisdaten/ili:Planungszonen_V1_1.Geobasisdaten.TypPZ_Dokument[ili:Vorschrift/@REF=$mgdm_dokument_tid]/ili:TypPZ/@REF"/>
-        <xsl:variable name="geolink_url" select="./ili:TextImWeb/ili:Planungszonen_V1_1.MultilingualUri/ili:LocalisedText/ili:Planungszonen_V1_1.LocalisedUri[1]/ili:Text"/>
-        <xsl:variable name="geolink_url_id" select="substring-before(substring-after($geolink_url, $oereblex_url), '.')"/>
         <xsl:for-each select="../../ili:Planungszonen_V1_1.Geobasisdaten/ili:Planungszonen_V1_1.Geobasisdaten.Planungszone[ili:TypPZ/@REF=$mgdm_typ_pz_ref]">
             <xsl:variable name="mgdm_pz_tid" select="./@TID"/>
-            <xsl:for-each select="$oereblex_documents_doc//DATASECTION/GeoLink[@lexlink_id=$geolink_url_id]/Dokument">
+            <xsl:for-each select="$oereblexdata//DATASECTION/MgdmDoc[@REF=$mgdm_dokument_tid]">
+                <xsl:for-each select="./OereblexDoc">
+                    <OeREBKRMtrsfr_V2_0.Transferstruktur.HinweisVorschrift>
+                        <Eigentumsbeschraenkung REF="eigentumsbeschraenkung_{$mgdm_pz_tid}"/>
+                        <Vorschrift REF="{./@REF}"/>
+                    </OeREBKRMtrsfr_V2_0.Transferstruktur.HinweisVorschrift>
+                </xsl:for-each>
+            </xsl:for-each>
+        </xsl:for-each>
+    </xsl:template>
+    <xsl:template match="ili:Planungszonen_V1_1.Geobasisdaten/ili:Planungszonen_V1_1.Geobasisdaten.Geometrie_Dokument">
+        <xsl:variable name="mgdm_dokument_tid" select="./ili:Dokument/@REF"/>
+        <xsl:variable name="mgdm_pz_tid" select="./ili:Geometrie/@REF"/>
+        <xsl:for-each select="$oereblexdata//DATASECTION/MgdmDoc[@REF=$mgdm_dokument_tid]">
+            <xsl:for-each select="./OereblexDoc">
                 <OeREBKRMtrsfr_V2_0.Transferstruktur.HinweisVorschrift>
                     <Eigentumsbeschraenkung REF="eigentumsbeschraenkung_{$mgdm_pz_tid}"/>
                     <Vorschrift REF="{./@REF}"/>
                 </OeREBKRMtrsfr_V2_0.Transferstruktur.HinweisVorschrift>
             </xsl:for-each>
         </xsl:for-each>
-    </xsl:template>
-    <xsl:template match="ili:Planungszonen_V1_1.Geobasisdaten/ili:Planungszonen_V1_1.Geobasisdaten.Geometrie_Dokument">
-        <OeREBKRMtrsfr_V2_0.Transferstruktur.HinweisVorschrift>
-            <Eigentumsbeschraenkung REF="eigentumsbeschraenkung_{./ili:Geometrie/@REF}"/>
-            <Vorschrift REF="{./ili:Dokument/@REF}"/>
-        </OeREBKRMtrsfr_V2_0.Transferstruktur.HinweisVorschrift>
     </xsl:template>
 </xsl:stylesheet>
