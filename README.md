@@ -21,7 +21,7 @@ docker run \
   -e MODEL="KbS_V1_5" \
   -e THEME_CODE="ch.BelasteteStandorte" \
   -e OEREBLEX_HOST="oereblex.sh.ch" \
-  -e XTF_PATH="/app/data/kbs_v1_5.xtf" \
+  -e XTF_FILE="/app/data/kbs_v1_5.xtf" \
   -e OEREBLEX_CANTON="gr" \
   -e DUMMY_OFFICE_NAME="DUMMYOFFICE" \
   -e DUMMY_OFFICE_URL="https://google.ch" \
@@ -52,7 +52,7 @@ docker run \
   -e MODEL="Planungszonen_V1_1" \
   -e THEME_CODE="ch.Planungszonen" \
   -e OEREBLEX_HOST="oereblex.gr.ch" \
-  -e XTF_PATH="/app/data/3668_2022-09-06_pz_neu.xtf" \
+  -e XTF_FILE="ch.Planungszonen.gr.mgdm_oereblex.v1_1.xtf" \
   -e OEREBLEX_CANTON="gr" \
   -e DUMMY_OFFICE_NAME="DUMMYOFFICE" \
   -e DUMMY_OFFICE_URL="https://google.ch" \
@@ -70,7 +70,7 @@ docker run \
   -e MODEL="Planungszonen_V1_1" \
   -e THEME_CODE="ch.Planungszonen" \
   -e OEREBLEX_HOST="oereblex.sh.ch" \
-  -e XTF_PATH="/app/data/planungszonen_v1_1.xtf" \
+  -e XTF_FILE="ch.Planungszonen.sh.mgdm_oereblex.v1_1.xtf" \
   -e OEREBLEX_CANTON="sh" \
   -e DUMMY_OFFICE_NAME="DUMMYOFFICE" \
   -e DUMMY_OFFICE_URL="https://google.ch" \
