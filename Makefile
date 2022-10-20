@@ -1,4 +1,5 @@
 
+XTF_PATH=data/$(XTF_FILE)
 
 result/oereblex.xml: xsl/oereblex.download.py
 	XTF_PATH="$(XTF_PATH)" \
