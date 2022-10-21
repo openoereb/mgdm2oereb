@@ -15,13 +15,23 @@ result/oereblex.xml: xsl/oereblex.download.py
 
 clean_oereblex_xml: result/oereblex.xml
 
-result/OeREBKRMtrsfr_V2_0.oereblex.xtf: xsl/$(MODEL).oereblex.trafo.xsl result/oereblex.xml
-	xsltproc --stringparam theme_code "$(THEME_CODE)" --stringparam oereblex_host "$(OEREBLEX_HOST)" --stringparam model "$(MODEL)" $^ $(XTF_PATH) > $@
+result/OeREBKRMtrsfr_V2_0.oereblex.xtf: xsl/$(MODEL).oereblex.trafo.xsl
+	xsltproc \
+		--stringparam theme_code "$(THEME_CODE)" \
+		--stringparam oereblex_host "$(OEREBLEX_HOST)" \
+		--stringparam model "$(MODEL)" \
+		--stringparam catalog "$(CATALOG_PATH)" \
+		--stringparam oereblex_output $(shell pwd)/"result/oereblex.xml" \
+		$^ $(XTF_PATH) > $@
 
 mgdm2oereb-oereblex: result/OeREBKRMtrsfr_V2_0.oereblex.xtf
 
 result/OeREBKRMtrsfr_V2_0.xtf: xsl/$(MODEL).trafo.xsl
-	xsltproc --stringparam theme_code "$(THEME_CODE)" --stringparam model "$(MODEL)" --stringparam catalog "$(CATALOG_PATH)" $^ $(XTF_PATH) > $@
+	xsltproc \
+		--stringparam theme_code "$(THEME_CODE)" \
+		--stringparam model "$(MODEL)" \
+		--stringparam catalog "$(CATALOG_PATH)" \
+		$^ $(XTF_PATH) > $@
 
 mgdm2oereb: result/OeREBKRMtrsfr_V2_0.xtf
 
@@ -29,3 +39,6 @@ mgdm2oereb: result/OeREBKRMtrsfr_V2_0.xtf
 clean:
 	rm -f result/oereblex.xml
 	rm -f result/OeREBKRMtrsfr_V2_0.xtf
+	rm -f result/OeREBKRMtrsfr_V2_0.oereblex.xtf
+	rm -f result/OeREBKRMtrsfr_V2_0.mgdm2oereb.log
+

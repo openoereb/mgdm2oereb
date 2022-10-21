@@ -4,7 +4,7 @@
     <xsl:output method="xml" indent="yes" encoding="UTF-8"/>
     <xsl:strip-space elements="*"/>
     <xsl:param name="catalog"/>
-    <xsl:variable name="catalog_doc" select="document($catalog)"/>
+    <xsl:variable name="catalog_doc" select="document(concat('file://', $catalog))"/>
     <xsl:param name="theme_code"/>
     <xsl:template match="/ili:TRANSFER/ili:DATASECTION">
         <TRANSFER xmlns="http://www.interlis.ch/INTERLIS2.3">
