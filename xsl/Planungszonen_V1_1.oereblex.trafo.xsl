@@ -3,8 +3,10 @@
                 version="1.0">
     <xsl:output method="xml" indent="yes" encoding="UTF-8"/>
     <xsl:strip-space elements="*"/>
-    <xsl:param name="oereblexdata" select="document('file:///app/result/oereblex.xml')"/>
-    <xsl:param name="darstellungsdienst_doc" select="document('file:///app/xsl/Planungszonen_V1_1.katalog.darstellungsdienst.xml')"/>
+    <xsl:param name="oereblex_output"/>
+    <xsl:variable name="oereblexdata" select="document(concat('file://', $oereblex_output))"/>
+    <xsl:param name="view_service_xml"/>
+    <xsl:variable name="darstellungsdienst_doc" select="document(concat('file://', $view_service_xml))"/>
     <xsl:variable name="darstellungsdienst_tid" select="$darstellungsdienst_doc//DATASECTION/OeREBKRMtrsfr_V2_0.Transferstruktur.DarstellungsDienst[1]/@TID"/>
     <xsl:param name="theme_code"/>
     <xsl:param name="oereblex_host"/>

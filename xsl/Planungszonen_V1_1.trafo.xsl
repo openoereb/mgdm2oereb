@@ -151,7 +151,7 @@
             <TextImWeb>
                 <xsl:apply-templates select="ili:Planungszonen_V1_1.MultilingualUri"/>
             </TextImWeb>
-            <ZustaendigeStelle REF="{$mgdm_amt}"/>
+            <ZustaendigeStelle REF="AMT_{$mgdm_amt}"/>
         </OeREBKRM_V2_0.Dokumente.Dokument>
         <xsl:for-each select="../../ili:Planungszonen_V1_1.Geobasisdaten/ili:Planungszonen_V1_1.Geobasisdaten.Planungszone[ili:TypPZ/@REF=$mgdm_typ_pz_ref]">
             <xsl:variable name="mgdm_pz_tid" select="./@TID"/>
