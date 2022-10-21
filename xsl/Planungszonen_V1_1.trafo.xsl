@@ -149,7 +149,7 @@
             <xsl:copy-of select="./ili:Titel"/>
             <xsl:copy-of select="./ili:Typ"/>
             <TextImWeb>
-                <xsl:apply-templates select="ili:Planungszonen_V1_1.MultilingualUri"/>
+                <xsl:apply-templates select="ili:TextImWeb/ili:Planungszonen_V1_1.MultilingualUri"/>
             </TextImWeb>
             <ZustaendigeStelle REF="AMT_{$mgdm_amt}"/>
         </OeREBKRM_V2_0.Dokumente.Dokument>
