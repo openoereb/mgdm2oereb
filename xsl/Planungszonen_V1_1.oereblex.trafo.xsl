@@ -3,9 +3,10 @@
                 version="1.0">
     <xsl:output method="xml" indent="yes" encoding="UTF-8"/>
     <xsl:strip-space elements="*"/>
-    <xsl:param name="oereblexdata" select="document('file:///app/result/oereblex.xml')"/>
-    <xsl:param name="darstellungsdienst_doc" select="document('file:///app/xsl/Planungszonen_V1_1.katalog.darstellungsdienst.xml')"/>
-    <xsl:variable name="darstellungsdienst_tid" select="$darstellungsdienst_doc//DATASECTION/OeREBKRMtrsfr_V2_0.Transferstruktur.DarstellungsDienst[1]/@TID"/>
+    <xsl:param name="oereblex_output"/>
+    <xsl:variable name="oereblexdata" select="document(concat('file://', $oereblex_output))"/>
+    <xsl:param name="catalog"/>
+    <xsl:variable name="catalog_doc" select="document(concat('file://', $catalog))"/>
     <xsl:param name="theme_code"/>
     <xsl:param name="oereblex_host"/>
     <xsl:variable name="oereblex_url" select="concat($oereblex_host,'/api/geolinks/')"/>
@@ -37,7 +38,7 @@
                     <xsl:apply-templates select="ili:Planungszonen_V1_1.Geobasisdaten"/>
                     <xsl:apply-templates
                             select="ili:Planungszonen_V1_1.TransferMetadaten/ili:Planungszonen_V1_1.TransferMetadaten.Amt"/>
-                    <xsl:copy-of select="$darstellungsdienst_doc//DATASECTION/OeREBKRMtrsfr_V2_0.Transferstruktur.DarstellungsDienst[1]"/>
+                    <xsl:call-template name="supplement"/>
                     <xsl:copy-of select="$oereblexdata//DATASECTION/OeREBKRM_V2_0.Amt.Amt"/>
                     <xsl:copy-of select="$oereblexdata//DATASECTION/OeREBKRM_V2_0.Dokumente.Dokument"/>
                     <xsl:apply-templates select="ili:Planungszonen_V1_1.Rechtsvorschriften/ili:Planungszonen_V1_1.Rechtsvorschriften.Dokument"/>
@@ -48,7 +49,6 @@
     </xsl:template>
     <xsl:template match="ili:Planungszonen_V1_1.Geobasisdaten">
         <xsl:apply-templates select="ili:Planungszonen_V1_1.Geobasisdaten.Planungszone"/>
-        <xsl:apply-templates select="ili:Planungszonen_V1_1.Geobasisdaten.Typ_Planungszone"/>
     </xsl:template>
     <xsl:template match="ili:Planungszonen_V1_1.Geobasisdaten/ili:Planungszonen_V1_1.Geobasisdaten.Planungszone">
         <OeREBKRMtrsfr_V2_0.Transferstruktur.Eigentumsbeschraenkung TID="eigentumsbeschraenkung_{@TID}">
@@ -58,10 +58,9 @@
             <xsl:call-template name="zustaendige_stelle">
                 <xsl:with-param name="basket_id" select="../@BID"/>
             </xsl:call-template>
-            <xsl:call-template name="legende">
+            <xsl:call-template name="legende_darstellungsdienst">
                 <xsl:with-param name="typ_ref_id" select="./ili:TypPZ/@REF"/>
             </xsl:call-template>
-            <DarstellungsDienst REF="{$darstellungsdienst_tid}"/>
         </OeREBKRMtrsfr_V2_0.Transferstruktur.Eigentumsbeschraenkung>
         <OeREBKRMtrsfr_V2_0.Transferstruktur.Geometrie TID="geometrie_{@TID}">
             <Flaeche>
@@ -74,42 +73,33 @@
         </OeREBKRMtrsfr_V2_0.Transferstruktur.Geometrie>
     </xsl:template>
 
-    <xsl:template match="ili:Planungszonen_V1_1.Geobasisdaten/ili:Planungszonen_V1_1.Geobasisdaten.Typ_Planungszone">
-        <OeREBKRMtrsfr_V2_0.Transferstruktur.LegendeEintrag TID="Legende_{./@TID}">
-            <LegendeText>
-                <LocalisationCH_V1.MultilingualText>
-                    <LocalisedText>
-                        <LocalisationCH_V1.LocalisedText>
-                            <Language>de</Language>
-                            <Text>
-                                <xsl:value-of select="ili:Bezeichnung"/>
-                            </Text>
-                        </LocalisationCH_V1.LocalisedText>
-                        <LocalisationCH_V1.LocalisedText>
-                            <Language>fr</Language>
-                            <Text>
-                                <xsl:value-of select="ili:Bezeichnung"/>
-                            </Text>
-                        </LocalisationCH_V1.LocalisedText><LocalisationCH_V1.LocalisedText>
-                            <Language>it</Language>
-                            <Text>
-                                <xsl:value-of select="ili:Bezeichnung"/>
-                            </Text>
-                        </LocalisationCH_V1.LocalisedText><LocalisationCH_V1.LocalisedText>
-                            <Language>rm</Language>
-                            <Text>
-                                <xsl:value-of select="ili:Bezeichnung"/>
-                            </Text>
-                        </LocalisationCH_V1.LocalisedText>
-                    </LocalisedText>
-                </LocalisationCH_V1.MultilingualText>
-            </LegendeText>
-            <ArtCode><xsl:value-of select="./@TID"/></ArtCode>
-            <ArtCodeliste>http://Gemeinde.Kanton.andere</ArtCodeliste>
-            <xsl:copy-of select="./ili:Symbol"/>
-            <Thema><xsl:value-of select="$theme_code"/></Thema>
-            <DarstellungsDienst REF="{$darstellungsdienst_tid}"/>
-        </OeREBKRMtrsfr_V2_0.Transferstruktur.LegendeEintrag>
+    <xsl:template name="supplement">
+        <xsl:for-each select="$catalog_doc//ili:TRANSFER/ili:DATASECTION/ili:OeREBKRMlegdrst_V2_0.Transferstruktur/ili:OeREBKRMlegdrst_V2_0.Transferstruktur.LegendeEintrag[ili:Thema=$theme_code]">
+            <OeREBKRMtrsfr_V2_0.Transferstruktur.LegendeEintrag TID="{./@TID}">
+                <xsl:copy-of select="node()"/>
+            </OeREBKRMtrsfr_V2_0.Transferstruktur.LegendeEintrag>
+        </xsl:for-each>
+        <xsl:for-each select="$catalog_doc//ili:TRANSFER/ili:DATASECTION/ili:OeREBKRMlegdrst_V2_0.Transferstruktur/ili:OeREBKRMlegdrst_V2_0.Transferstruktur.LegendeEintrag/ili:DarstellungsDienst[not(@REF = (preceding::*/@REF))]">
+            <xsl:sort select="@REF"/>
+            <xsl:variable name="darstellungsdienst_tid" select="@REF"/>
+            <xsl:variable name="darstellungsdienst_thema" select="../ili:Thema"/>
+            <xsl:if test="$theme_code = $darstellungsdienst_thema">
+                <xsl:for-each select="$catalog_doc//ili:TRANSFER/ili:DATASECTION/ili:OeREBKRMlegdrst_V2_0.Transferstruktur/ili:OeREBKRMlegdrst_V2_0.Transferstruktur.DarstellungsDienst[@TID=$darstellungsdienst_tid]">
+                    <OeREBKRMtrsfr_V2_0.Transferstruktur.DarstellungsDienst TID="{$darstellungsdienst_tid}">
+                        <xsl:copy-of select="node()"/>
+                    </OeREBKRMtrsfr_V2_0.Transferstruktur.DarstellungsDienst>
+                </xsl:for-each>
+            </xsl:if>
+        </xsl:for-each>
+    </xsl:template>
+
+    <xsl:template name="legende_darstellungsdienst">
+        <xsl:param name="typ_ref_id"/>
+        <xsl:variable name="typ_code" select="../ili:Planungszonen_V1_1.Geobasisdaten.Typ_Planungszone[@TID=$typ_ref_id]/ili:Festlegung_Stufe"/>
+        <xsl:variable name="legende_tid" select="$catalog_doc//ili:TRANSFER/ili:DATASECTION/ili:OeREBKRMlegdrst_V2_0.Transferstruktur/ili:OeREBKRMlegdrst_V2_0.Transferstruktur.LegendeEintrag[ili:Thema=$theme_code][ili:ArtCode=$typ_code]/@TID"/>
+        <xsl:variable name="darstellungsdienst_tid" select="$catalog_doc//ili:TRANSFER/ili:DATASECTION/ili:OeREBKRMlegdrst_V2_0.Transferstruktur/ili:OeREBKRMlegdrst_V2_0.Transferstruktur.LegendeEintrag[ili:Thema=$theme_code][ili:ArtCode=$typ_code]/ili:DarstellungsDienst/@REF"/>
+        <Legende REF="{$legende_tid}"/>
+        <DarstellungsDienst REF="{$darstellungsdienst_tid}"/>
     </xsl:template>
 
     <xsl:template name="zustaendige_stelle">

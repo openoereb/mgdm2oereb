@@ -104,6 +104,7 @@ docker run \
   -e THEME_CODE="ch.Planungszonen" \
   -e OEREBLEX_HOST="oereblex.sh.ch" \
   -e XTF_FILE="ch.Planungszonen.sh.mgdm_oereblex.v1_1.xtf" \
+  -e CATALOG="ch.sh.OeREBKRMkvs_supplement.xml" \
   -e OEREBLEX_CANTON="sh" \
   -e DUMMY_OFFICE_NAME="DUMMYOFFICE" \
   -e DUMMY_OFFICE_URL="https://google.ch" \
