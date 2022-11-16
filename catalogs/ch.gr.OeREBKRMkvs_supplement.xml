@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TRANSFER xmlns="http://www.interlis.ch/INTERLIS2.3">
+    <HEADERSECTION SENDER="" VERSION="2.3">
+        <MODELS>
+            <MODEL NAME="OeREBKRMlegdrst_V2_0" VERSION="2021-04-14" URI="http://models.kgk-cgc.ch/"></MODEL>
+        </MODELS>
+    </HEADERSECTION>
+    <DATASECTION>
+        <OeREBKRMlegdrst_V2_0.Transferstruktur BID="ch.gr.oerebkrmtrsfr">
+             <OeREBKRMlegdrst_V2_0.Transferstruktur.DarstellungsDienst TID="gr.pz.drst">
+                <VerweisWMS>
+                    <OeREBKRM_V2_0.MultilingualUri>
+                        <LocalisedText>
+                            <OeREBKRM_V2_0.LocalisedUri>
+                                <Language>de</Language>
+                                <Text>https://wms.geo.gr.ch/planungszonen</Text>
+                            </OeREBKRM_V2_0.LocalisedUri>
+                            <OeREBKRM_V2_0.LocalisedUri>
+                                <Language>it</Language>
+                                <Text>https://wms.geo.gr.ch/planungszonen</Text>
+                            </OeREBKRM_V2_0.LocalisedUri>
+                            <OeREBKRM_V2_0.LocalisedUri>
+                                <Language>rm</Language>
+                                <Text>https://wms.geo.gr.ch/planungszonen</Text>
+                            </OeREBKRM_V2_0.LocalisedUri>
+                        </LocalisedText>
+                    </OeREBKRM_V2_0.MultilingualUri>
+                </VerweisWMS>
+            </OeREBKRMlegdrst_V2_0.Transferstruktur.DarstellungsDienst>
+            <OeREBKRMlegdrst_V2_0.Transferstruktur.LegendeEintrag TID="gr.pz.leg">
+                <Symbol>
+                    <BINBLBOX>iVBORw0KGgoAAAANSUhEUgAAADwAAAAeCAYAAABwmH1PAAAACXBIWXMAAA7EAAAOxAGVKw4bAAAA+ElEQVRYhe2ZMQqDQBBF35JSNPc/kHoSx0IELdIZTCEbEpIYdQpnYK1sHv8/RJbPBoEZuAM3lvetT5ghC3BxxF8RmATmBuoeih2BdJA3UHvhBQYERk1oD4UXPgoPr1ALlSbUMv8U9lRaw78JR6iFShNqmf8Q9lBaw38Vtl5aw/8Utlxaw68KWy2t4QXGVWGLpTW8wPRX2FppLb9J2Frpo/zmL2yptIaP//CoCe0g98ILDDQwaUIFSi98PJYOTzOB0hMfhdMe3hOa9rBhPu3hs8/JtIfTHtbxaQ97KK3h0x72UDrt4R28wBRkuYDaOhEDkKG4ADuZvz4AVdltx8PmfqAAAAAASUVORK5CYII=</BINBLBOX>
+                </Symbol>
+                <LegendeText>
+                    <LocalisationCH_V1.MultilingualText>
+                        <LocalisedText>
+                            <LocalisationCH_V1.LocalisedText>
+                                <Language>de</Language>
+                                <Text>Planungszone</Text>
+                            </LocalisationCH_V1.LocalisedText>
+                            <LocalisationCH_V1.LocalisedText>
+                                <Language>it</Language>
+                                <Text>Zona di pianificazione</Text>
+                            </LocalisationCH_V1.LocalisedText>
+                            <LocalisationCH_V1.LocalisedText>
+                                <Language>rm</Language>
+                                <Text>Zona da planisaziun</Text>
+                            </LocalisationCH_V1.LocalisedText>
+                        </LocalisedText>
+                    </LocalisationCH_V1.MultilingualText>
+                </LegendeText>
+                <ArtCode>Gemeinde_inKraft</ArtCode>
+                <ArtCodeliste>https://Planungszone</ArtCodeliste>
+                <Thema>ch.Planungszonen</Thema>
+                <DarstellungsDienst REF="gr.pz.drst"></DarstellungsDienst>
+            </OeREBKRMlegdrst_V2_0.Transferstruktur.LegendeEintrag>
+        </OeREBKRMlegdrst_V2_0.Transferstruktur>
+    </DATASECTION>
+</TRANSFER>
