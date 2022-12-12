@@ -53,6 +53,7 @@
             </xsl:call-template>
             <xsl:call-template name="legende_darstellungsdienst">
                 <xsl:with-param name="typ_ref_id" select="./ili:TypPZ/@REF"/>
+                <xsl:with-param name="rechtsstatus" select="./ili:Rechtsstatus"/>
             </xsl:call-template>
         </OeREBKRMtrsfr_V2_0.Transferstruktur.Eigentumsbeschraenkung>
         <OeREBKRMtrsfr_V2_0.Transferstruktur.Geometrie TID="geometrie_{@TID}">
@@ -93,9 +94,10 @@
 
     <xsl:template name="legende_darstellungsdienst">
         <xsl:param name="typ_ref_id"/>
+        <xsl:param name="rechtsstatus"/>
         <xsl:variable name="typ_code" select="../ili:Planungszonen_V1_1.Geobasisdaten.Typ_Planungszone[@TID=$typ_ref_id]/ili:Festlegung_Stufe"/>
-        <xsl:variable name="legende_tid" select="$catalog_doc//ili:TRANSFER/ili:DATASECTION/ili:OeREBKRMlegdrst_V2_0.Transferstruktur/ili:OeREBKRMlegdrst_V2_0.Transferstruktur.LegendeEintrag[ili:Thema=$theme_code][ili:ArtCode=$typ_code]/@TID"/>
-        <xsl:variable name="darstellungsdienst_tid" select="$catalog_doc//ili:TRANSFER/ili:DATASECTION/ili:OeREBKRMlegdrst_V2_0.Transferstruktur/ili:OeREBKRMlegdrst_V2_0.Transferstruktur.LegendeEintrag[ili:Thema=$theme_code][ili:ArtCode=$typ_code]/ili:DarstellungsDienst/@REF"/>
+        <xsl:variable name="legende_tid" select="$catalog_doc//ili:TRANSFER/ili:DATASECTION/ili:OeREBKRMlegdrst_V2_0.Transferstruktur/ili:OeREBKRMlegdrst_V2_0.Transferstruktur.LegendeEintrag[ili:Thema=$theme_code][ili:ArtCode=concat($typ_code,'_',$rechtsstatus)]/@TID"/>
+        <xsl:variable name="darstellungsdienst_tid" select="$catalog_doc//ili:TRANSFER/ili:DATASECTION/ili:OeREBKRMlegdrst_V2_0.Transferstruktur/ili:OeREBKRMlegdrst_V2_0.Transferstruktur.LegendeEintrag[ili:Thema=$theme_code][ili:ArtCode=concat($typ_code,'_',$rechtsstatus)]/ili:DarstellungsDienst/@REF"/>
         <Legende REF="{$legende_tid}"/>
         <DarstellungsDienst REF="{$darstellungsdienst_tid}"/>
     </xsl:template>
