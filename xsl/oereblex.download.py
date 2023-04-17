@@ -138,8 +138,9 @@ for geolink_id in oereblex_geolink_unique.keys():
         for document in oereblex_geolink_unique[geolink_id][language]['documents']:
 
             for file in document['files']:
-                if not flattened_documents.get(document['id']):
-                    flattened_documents[document['id']] = {
+                internal_doc_id = f'{document["id"]}-{file["href"]}'
+                if not flattened_documents.get(internal_doc_id):
+                    flattened_documents[internal_doc_id] = {
                         "doc.authority": {
                             language: document.get('authority') or ""
                         },
@@ -176,23 +177,23 @@ for geolink_id in oereblex_geolink_unique.keys():
                         "mgdm.tids": []
                     }
                 for mgdm_doc_id in mgdm_doc_ids:
-                    if mgdm_doc_id not in flattened_documents[document['id']]["mgdm.tids"]:
-                        flattened_documents[document['id']]["mgdm.tids"].append(mgdm_doc_id)
-                logging.info('Adding a new doc to flattened documents with id {0}.'.format(document['id']))
+                    if mgdm_doc_id not in flattened_documents[internal_doc_id]["mgdm.tids"]:
+                        flattened_documents[internal_doc_id]["mgdm.tids"].append(mgdm_doc_id)
+                logging.info('Adding a new doc to flattened documents with id {0}.'.format(internal_doc_id))
             else:
-                flattened_documents[document['id']]["doc.authority"][language] = document.get('authority') or ""
-                flattened_documents[document['id']]["doc.authority_url"][language] = document.get('authority_url') or ""
-                flattened_documents[document['id']]["doc.federal_level"][language] = document.get('federal_level') or ''
-                flattened_documents[document['id']]["doc.number"][language] = document.get('number') or ''
-                flattened_documents[document['id']]["doc.title"][language] = document['title']
-                flattened_documents[document['id']]["file.description"][language] = file.get("description") or ""
-                flattened_documents[document['id']]["file.href"][language] = file["href"]
-                flattened_documents[document['id']]["file.title"][language] = file["title"]
+                flattened_documents[internal_doc_id]["doc.authority"][language] = document.get('authority') or ""
+                flattened_documents[internal_doc_id]["doc.authority_url"][language] = document.get('authority_url') or ""
+                flattened_documents[internal_doc_id]["doc.federal_level"][language] = document.get('federal_level') or ''
+                flattened_documents[internal_doc_id]["doc.number"][language] = document.get('number') or ''
+                flattened_documents[internal_doc_id]["doc.title"][language] = document['title']
+                flattened_documents[internal_doc_id]["file.description"][language] = file.get("description") or ""
+                flattened_documents[internal_doc_id]["file.href"][language] = file["href"]
+                flattened_documents[internal_doc_id]["file.title"][language] = file["title"]
                 for mgdm_doc_id in mgdm_doc_ids:
-                    if mgdm_doc_id not in flattened_documents[document['id']]["mgdm.tids"]:
-                        flattened_documents[document['id']]["mgdm.tids"].append(mgdm_doc_id)
-                flattened_documents[document['id']]["mgdm.geolink"][language] = mgdm_geolink
-                logging.info('Document ID {} already in flattened dict. Adding up...'.format(document['id']))
+                    if mgdm_doc_id not in flattened_documents[internal_doc_id]["mgdm.tids"]:
+                        flattened_documents[internal_doc_id]["mgdm.tids"].append(mgdm_doc_id)
+                flattened_documents[internal_doc_id]["mgdm.geolink"][language] = mgdm_geolink
+                logging.info('Document ID {} already in flattened dict. Adding up...'.format(internal_doc_id))
 
 uuid_flattened_documents = {}
 for key in flattened_documents:
