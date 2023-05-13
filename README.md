@@ -149,3 +149,43 @@ docker run \
   -e CATALOG="ch.sh.OeREBKRMkvs_supplement.xml" \
   mgdm2oereb-transformator:latest make clean mgdm2oereb
 ```
+
+## Nutzungsplanung
+
+### v1.2 ÖREBlex
+
+#### SH
+
+```bash
+docker run \
+--rm \
+-ti \
+-u $(id -u):$(id -g) \
+-v $(pwd):/app \
+-e MODEL="Nutzungsplanung_V1_2" \
+-e THEME_CODE="ch.Nutzungsplanung" \
+-e OEREBLEX_HOST="oereblex.sh.ch" \
+-e XTF_FILE="ch.Nutzungsplanung.sh.tha.mgdm_oereblex.v1_2.xtf" \
+-e CATALOG="ch.sh.OeREBKRMkvs_supplement.xml" \
+-e OEREBLEX_CANTON="sh" \
+-e DUMMY_OFFICE_NAME="DUMMYOFFICE" \
+-e DUMMY_OFFICE_URL="https://google.ch" \
+mgdm2oereb-transformator:latest make clean clean_oereblex_xml mgdm2oereb-oereblex 
+```
+
+### v1.2
+
+#### SH
+
+```bash
+docker run \
+  --rm \
+  -ti \
+  -u $(id -u):$(id -g) \
+  -v $(pwd):/app \
+  -e MODEL="Nutzungsplanung_V1_2" \
+  -e THEME_CODE="ch.Nutzungsplanung" \
+  -e XTF_FILE="ch.Nutzungsplanung.sh.tha.mgdm.v1_2.xtf" \
+  -e CATALOG="ch.sh.OeREBKRMkvs_supplement.xml" \
+  mgdm2oereb-transformator:latest make clean mgdm2oereb
+```
