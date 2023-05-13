@@ -73,24 +73,30 @@
             <Eigentumsbeschraenkung REF="eigentumsbeschraenkung_{@TID}"/>
         </OeREBKRMtrsfr_V2_0.Transferstruktur.Geometrie>
     </xsl:template>
-
     <xsl:template name="supplement">
-        <xsl:for-each select="$catalog_doc//ili:TRANSFER/ili:DATASECTION/ili:OeREBKRMlegdrst_V2_0.Transferstruktur/ili:OeREBKRMlegdrst_V2_0.Transferstruktur.LegendeEintrag[ili:Thema=$theme_code]">
-            <OeREBKRMtrsfr_V2_0.Transferstruktur.LegendeEintrag TID="{./@TID}">
-                <xsl:copy-of select="node()"/>
-            </OeREBKRMtrsfr_V2_0.Transferstruktur.LegendeEintrag>
-        </xsl:for-each>
-        <xsl:for-each select="$catalog_doc//ili:TRANSFER/ili:DATASECTION/ili:OeREBKRMlegdrst_V2_0.Transferstruktur/ili:OeREBKRMlegdrst_V2_0.Transferstruktur.LegendeEintrag/ili:DarstellungsDienst[not(@REF = (preceding::*/@REF))]">
-            <xsl:sort select="@REF"/>
-            <xsl:variable name="darstellungsdienst_tid" select="@REF"/>
-            <xsl:variable name="darstellungsdienst_thema" select="../ili:Thema"/>
-            <xsl:if test="$theme_code = $darstellungsdienst_thema">
-                <xsl:for-each select="$catalog_doc//ili:TRANSFER/ili:DATASECTION/ili:OeREBKRMlegdrst_V2_0.Transferstruktur/ili:OeREBKRMlegdrst_V2_0.Transferstruktur.DarstellungsDienst[@TID=$darstellungsdienst_tid]">
-                    <OeREBKRMtrsfr_V2_0.Transferstruktur.DarstellungsDienst TID="{$darstellungsdienst_tid}">
-                        <xsl:copy-of select="node()"/>
-                    </OeREBKRMtrsfr_V2_0.Transferstruktur.DarstellungsDienst>
-                </xsl:for-each>
-            </xsl:if>
+        <!-- we select a unique node set with preceding of all ili:Rechtsstatus from MGDM Xtf and loop over it to use the ili:Rechtsstatus as a filter on the catalogue -->
+        <xsl:for-each select="//ili:Planungszonen_V1_1.Geobasisdaten.Planungszone/ili:Rechtsstatus[not(text() = (../preceding::ili:Planungszonen_V1_1.Geobasisdaten.Planungszone/ili:Rechtsstatus))]">
+            <xsl:variable name="rechtsstatus" select="."/>
+            <xsl:comment> LOG
+                rechtsstatus="<xsl:value-of select="." />"
+            </xsl:comment>
+            <xsl:for-each select="$catalog_doc//ili:TRANSFER/ili:DATASECTION/ili:OeREBKRMlegdrst_V2_0.Transferstruktur/ili:OeREBKRMlegdrst_V2_0.Transferstruktur.LegendeEintrag[ili:Thema=$theme_code][contains(./ili:ArtCode, $rechtsstatus)]">
+                <OeREBKRMtrsfr_V2_0.Transferstruktur.LegendeEintrag TID="{./@TID}">
+                    <xsl:copy-of select="node()"/>
+                </OeREBKRMtrsfr_V2_0.Transferstruktur.LegendeEintrag>
+            </xsl:for-each>
+            <xsl:for-each select="$catalog_doc//ili:TRANSFER/ili:DATASECTION/ili:OeREBKRMlegdrst_V2_0.Transferstruktur/ili:OeREBKRMlegdrst_V2_0.Transferstruktur.LegendeEintrag[contains(./ili:ArtCode, $rechtsstatus)]/ili:DarstellungsDienst[not(@REF = (preceding::*/@REF))]">
+                <xsl:sort select="@REF"/>
+                <xsl:variable name="darstellungsdienst_tid" select="@REF"/>
+                <xsl:variable name="darstellungsdienst_thema" select="../ili:Thema"/>
+                <xsl:if test="$theme_code = $darstellungsdienst_thema">
+                    <xsl:for-each select="$catalog_doc//ili:TRANSFER/ili:DATASECTION/ili:OeREBKRMlegdrst_V2_0.Transferstruktur/ili:OeREBKRMlegdrst_V2_0.Transferstruktur.DarstellungsDienst[@TID=$darstellungsdienst_tid]">
+                        <OeREBKRMtrsfr_V2_0.Transferstruktur.DarstellungsDienst TID="{$darstellungsdienst_tid}">
+                            <xsl:copy-of select="node()"/>
+                        </OeREBKRMtrsfr_V2_0.Transferstruktur.DarstellungsDienst>
+                    </xsl:for-each>
+                </xsl:if>
+            </xsl:for-each>
         </xsl:for-each>
     </xsl:template>
 
