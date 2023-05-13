@@ -1,6 +1,9 @@
-<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
-                xmlns:ili="http://www.interlis.ch/INTERLIS2.3"
-                version="1.0">
+<xsl:stylesheet
+    xmlns="http://www.interlis.ch/INTERLIS2.3"
+    xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+    xmlns:ili="http://www.interlis.ch/INTERLIS2.3"
+    exclude-result-prefixes="ili"
+    version="1.0">
     <xsl:output method="xml" indent="yes" encoding="UTF-8"/>
     <xsl:strip-space elements="*"/>
     <xsl:param name="oereblexdata" select="document('file:///app/result/oereblex.xml')"/>
@@ -42,14 +45,14 @@
                         <xsl:if test="./ili:Symbol_Punkt">
                             <OeREBKRMtrsfr_V2_0.Transferstruktur.LegendeEintrag TID="{@TID}_Punkt">
                                 <LegendeText>
-                                    <xsl:copy-of select="./ili:Definition/ili:LocalisationCH_V1.MultilingualText"/>
+                                    <xsl:apply-templates select="./ili:Definition/ili:LocalisationCH_V1.MultilingualText" mode="copy-no-namespaces"/>
                                 </LegendeText>
                                 <ArtCode>
                                     <xsl:value-of select="./ili:Code"></xsl:value-of>
                                 </ArtCode>
                                 <ArtCodeliste>https://models.geo.admin.ch/BAFU/KbS_Codetexte_V1_5_20211015.xml</ArtCodeliste>
                                 <Symbol>
-                                    <xsl:copy-of select="./ili:Symbol_Punkt/ili:BINBLBOX"/>
+                                    <xsl:apply-templates select="./ili:Symbol_Punkt/ili:BINBLBOX" mode="copy-no-namespaces"/>
                                 </Symbol>
                                 <Thema><xsl:value-of select="$theme_code"/></Thema>
                                 <DarstellungsDienst REF="{$darstellungsdienst_tid}"/>
@@ -58,23 +61,23 @@
                         <xsl:if test="./ili:Symbol_Flaeche">
                             <OeREBKRMtrsfr_V2_0.Transferstruktur.LegendeEintrag TID="{@TID}_Flaeche">
                                 <LegendeText>
-                                    <xsl:copy-of select="./ili:Definition/ili:LocalisationCH_V1.MultilingualText"/>
+                                    <xsl:apply-templates select="./ili:Definition/ili:LocalisationCH_V1.MultilingualText" mode="copy-no-namespaces"/>
                                 </LegendeText>
                                 <ArtCode>
                                     <xsl:value-of select="./ili:Code"></xsl:value-of>
                                 </ArtCode>
                                 <ArtCodeliste>https://models.geo.admin.ch/BAFU/KbS_Codetexte_V1_5_20211015.xml</ArtCodeliste>
                                 <Symbol>
-                                    <xsl:copy-of select="./ili:Symbol_Flaeche/ili:BINBLBOX"/>
+                                    <xsl:apply-templates select="./ili:Symbol_Flaeche/ili:BINBLBOX" mode="copy-no-namespaces"/>
                                 </Symbol>
                                 <Thema><xsl:value-of select="$theme_code"/></Thema>
                                 <DarstellungsDienst REF="{$darstellungsdienst_tid}"/>
                             </OeREBKRMtrsfr_V2_0.Transferstruktur.LegendeEintrag>
                         </xsl:if>
                     </xsl:for-each>
-                    <xsl:copy-of select="$darstellungsdienst_doc//DATASECTION/OeREBKRMtrsfr_V2_0.Transferstruktur.DarstellungsDienst[1]"/>
-                    <xsl:copy-of select="$oereblexdata//DATASECTION/OeREBKRM_V2_0.Amt.Amt"/>
-                    <xsl:copy-of select="$oereblexdata//DATASECTION/OeREBKRM_V2_0.Dokumente.Dokument"/>
+                    <xsl:apply-templates select="$darstellungsdienst_doc//DATASECTION/OeREBKRMtrsfr_V2_0.Transferstruktur.DarstellungsDienst[1]" mode="copy-no-namespaces"/>
+                    <xsl:apply-templates select="$oereblexdata//DATASECTION/OeREBKRM_V2_0.Amt.Amt" mode="copy-no-namespaces"/>
+                    <xsl:apply-templates select="$oereblexdata//DATASECTION/OeREBKRM_V2_0.Dokumente.Dokument" mode="copy-no-namespaces"/>
                     <xsl:for-each select="$oereblexdata//DATASECTION/MgdmDoc">
                         <xsl:variable name="mgdm_tid" select="./@REF"/>
                         <xsl:for-each select="./OereblexDoc">
@@ -97,8 +100,7 @@
     <xsl:template match="ili:KbS_V1_5.Belastete_Standorte/ili:KbS_V1_5.Belastete_Standorte.ZustaendigkeitKataster">
         <OeREBKRM_V2_0.Amt.Amt TID="amt_{@TID}">
             <Name>
-                <xsl:copy-of
-                        select="./ili:Zustaendige_Behoerde/ili:LocalisationCH_V1.MultilingualText"/>
+                <xsl:apply-templates select="./ili:Zustaendige_Behoerde/ili:LocalisationCH_V1.MultilingualText" mode="copy-no-namespaces"/>
             </Name>
             <AmtImWeb>
                 <xsl:apply-templates select="ili:KbS_V1_5.MultilingualUri"/>
@@ -142,7 +144,7 @@
             <xsl:for-each
                     select="./ili:Geo_Lage_Polygon/ili:KbS_V1_5.Belastete_Standorte.MultiPolygon/ili:Polygones">
                     <Flaeche>
-                        <xsl:copy-of select="./ili:KbS_V1_5.Belastete_Standorte.PolygonStructure/ili:Polygon/ili:SURFACE"/>
+                        <xsl:apply-templates select="./ili:KbS_V1_5.Belastete_Standorte.PolygonStructure/ili:Polygon/ili:SURFACE" mode="copy-no-namespaces"/>
                     </Flaeche>
                     <Rechtsstatus><xsl:value-of select="$rechts_status"/></Rechtsstatus>
                     <publiziertAb>
@@ -182,5 +184,15 @@
                 <xsl:apply-templates select="ili:LocalisedText/ili:Planungszonen_V1_1.LocalisedUri"/>
             </LocalisedText>
         </OeREBKRM_V2_0.MultilingualUri>
+    </xsl:template>
+    <xsl:template match="*" mode="copy-no-namespaces">
+        <xsl:element name="{local-name()}">
+            <xsl:copy-of select="@*"/>
+            <xsl:apply-templates select="node()" mode="copy-no-namespaces"/>
+        </xsl:element>
+    </xsl:template>
+
+    <xsl:template match="comment()| processing-instruction()" mode="copy-no-namespaces">
+        <xsl:copy/>
     </xsl:template>
 </xsl:stylesheet>

@@ -1,9 +1,9 @@
-<xsl:stylesheet xmlns="http://www.interlis.ch/INTERLIS2.3"
-        xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
-        xmlns:ili="http://www.interlis.ch/INTERLIS2.3"
-        version="1.0"
-        extension-element-prefixes="ili"
-        exclude-result-prefixes="ili">
+<xsl:stylesheet
+    xmlns="http://www.interlis.ch/INTERLIS2.3"
+    xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+    xmlns:ili="http://www.interlis.ch/INTERLIS2.3"
+    exclude-result-prefixes="ili"
+    version="1.0">
     <xsl:output method="xml" indent="yes" encoding="UTF-8"/>
     <xsl:strip-space elements="*"/>
     <xsl:param name="oereblex_output"/>

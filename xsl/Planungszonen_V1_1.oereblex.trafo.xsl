@@ -1,6 +1,9 @@
-<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
-                xmlns:ili="http://www.interlis.ch/INTERLIS2.3"
-                version="1.0">
+<xsl:stylesheet
+    xmlns="http://www.interlis.ch/INTERLIS2.3"
+    xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+    xmlns:ili="http://www.interlis.ch/INTERLIS2.3"
+    exclude-result-prefixes="ili"
+    version="1.0">
     <xsl:output method="xml" indent="yes" encoding="UTF-8"/>
     <xsl:strip-space elements="*"/>
     <xsl:param name="oereblex_output"/>
@@ -39,8 +42,8 @@
                     <xsl:apply-templates
                             select="ili:Planungszonen_V1_1.TransferMetadaten/ili:Planungszonen_V1_1.TransferMetadaten.Amt"/>
                     <xsl:call-template name="supplement"/>
-                    <xsl:copy-of select="$oereblexdata//DATASECTION/OeREBKRM_V2_0.Amt.Amt"/>
-                    <xsl:copy-of select="$oereblexdata//DATASECTION/OeREBKRM_V2_0.Dokumente.Dokument"/>
+                    <xsl:apply-templates select="$oereblexdata//DATASECTION/OeREBKRM_V2_0.Amt.Amt" mode="copy-no-namespaces"/>
+                    <xsl:apply-templates select="$oereblexdata//DATASECTION/OeREBKRM_V2_0.Dokumente.Dokument" mode="copy-no-namespaces"/>
                     <xsl:apply-templates select="ili:Planungszonen_V1_1.Rechtsvorschriften/ili:Planungszonen_V1_1.Rechtsvorschriften.Dokument"/>
                     <xsl:apply-templates select="ili:Planungszonen_V1_1.Geobasisdaten/ili:Planungszonen_V1_1.Geobasisdaten.Geometrie_Dokument"/>
                 </OeREBKRMtrsfr_V2_0.Transferstruktur>
@@ -52,9 +55,9 @@
     </xsl:template>
     <xsl:template match="ili:Planungszonen_V1_1.Geobasisdaten/ili:Planungszonen_V1_1.Geobasisdaten.Planungszone">
         <OeREBKRMtrsfr_V2_0.Transferstruktur.Eigentumsbeschraenkung TID="eigentumsbeschraenkung_{@TID}">
-            <xsl:copy-of select="./ili:Rechtsstatus"/>
-            <xsl:copy-of select="./ili:publiziertAb"/>
-            <xsl:copy-of select="./ili:publiziertBis"/>
+            <xsl:apply-templates select="./ili:Rechtsstatus" mode="copy-no-namespaces"/>
+            <xsl:apply-templates select="./ili:publiziertAb" mode="copy-no-namespaces"/>
+            <xsl:apply-templates select="./ili:publiziertBis" mode="copy-no-namespaces"/>
             <xsl:call-template name="zustaendige_stelle">
                 <xsl:with-param name="basket_id" select="../@BID"/>
             </xsl:call-template>
@@ -65,11 +68,11 @@
         </OeREBKRMtrsfr_V2_0.Transferstruktur.Eigentumsbeschraenkung>
         <OeREBKRMtrsfr_V2_0.Transferstruktur.Geometrie TID="geometrie_{@TID}">
             <Flaeche>
-                <xsl:copy-of select="./ili:Geometrie/ili:SURFACE"/>
+                <xsl:apply-templates select="./ili:Geometrie/ili:SURFACE" mode="copy-no-namespaces"/>
             </Flaeche>
-            <xsl:copy-of select="./ili:Rechtsstatus"/>
-            <xsl:copy-of select="./ili:publiziertAb"/>
-            <xsl:copy-of select="./ili:publiziertBis"/>
+            <xsl:apply-templates select="./ili:Rechtsstatus" mode="copy-no-namespaces"/>
+            <xsl:apply-templates select="./ili:publiziertAb" mode="copy-no-namespaces"/>
+            <xsl:apply-templates select="./ili:publiziertBis" mode="copy-no-namespaces"/>
             <Eigentumsbeschraenkung REF="eigentumsbeschraenkung_{@TID}"/>
         </OeREBKRMtrsfr_V2_0.Transferstruktur.Geometrie>
     </xsl:template>
@@ -82,7 +85,7 @@
             </xsl:comment>
             <xsl:for-each select="$catalog_doc//ili:TRANSFER/ili:DATASECTION/ili:OeREBKRMlegdrst_V2_0.Transferstruktur/ili:OeREBKRMlegdrst_V2_0.Transferstruktur.LegendeEintrag[ili:Thema=$theme_code][contains(./ili:ArtCode, $rechtsstatus)]">
                 <OeREBKRMtrsfr_V2_0.Transferstruktur.LegendeEintrag TID="{./@TID}">
-                    <xsl:copy-of select="node()"/>
+                    <xsl:apply-templates select="node()" mode="copy-no-namespaces"/>
                 </OeREBKRMtrsfr_V2_0.Transferstruktur.LegendeEintrag>
             </xsl:for-each>
             <xsl:for-each select="$catalog_doc//ili:TRANSFER/ili:DATASECTION/ili:OeREBKRMlegdrst_V2_0.Transferstruktur/ili:OeREBKRMlegdrst_V2_0.Transferstruktur.LegendeEintrag[contains(./ili:ArtCode, $rechtsstatus)]/ili:DarstellungsDienst[not(@REF = (preceding::*/@REF))]">
@@ -92,7 +95,7 @@
                 <xsl:if test="$theme_code = $darstellungsdienst_thema">
                     <xsl:for-each select="$catalog_doc//ili:TRANSFER/ili:DATASECTION/ili:OeREBKRMlegdrst_V2_0.Transferstruktur/ili:OeREBKRMlegdrst_V2_0.Transferstruktur.DarstellungsDienst[@TID=$darstellungsdienst_tid]">
                         <OeREBKRMtrsfr_V2_0.Transferstruktur.DarstellungsDienst TID="{$darstellungsdienst_tid}">
-                            <xsl:copy-of select="node()"/>
+                            <xsl:apply-templates select="node()" mode="copy-no-namespaces"/>
                         </OeREBKRMtrsfr_V2_0.Transferstruktur.DarstellungsDienst>
                     </xsl:for-each>
                 </xsl:if>
@@ -143,7 +146,7 @@
 
     <xsl:template match="ili:Planungszonen_V1_1.TransferMetadaten/ili:Planungszonen_V1_1.TransferMetadaten.Amt">
         <OeREBKRM_V2_0.Amt.Amt TID="AMT_{./@TID}">
-            <xsl:copy-of select="./ili:Name"/>
+            <xsl:apply-templates select="ili:Name" mode="copy-no-namespaces"/>
             <xsl:apply-templates select="ili:AmtImWeb"/>
         </OeREBKRM_V2_0.Amt.Amt>
     </xsl:template>
@@ -183,5 +186,15 @@
                 </OeREBKRMtrsfr_V2_0.Transferstruktur.HinweisVorschrift>
             </xsl:for-each>
         </xsl:for-each>
+    </xsl:template>
+    <xsl:template match="*" mode="copy-no-namespaces">
+        <xsl:element name="{local-name()}">
+            <xsl:copy-of select="@*"/>
+            <xsl:apply-templates select="node()" mode="copy-no-namespaces"/>
+        </xsl:element>
+    </xsl:template>
+
+    <xsl:template match="comment()| processing-instruction()" mode="copy-no-namespaces">
+        <xsl:copy/>
     </xsl:template>
 </xsl:stylesheet>
