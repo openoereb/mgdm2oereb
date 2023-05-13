@@ -92,6 +92,24 @@ docker run \
   -e DUMMY_OFFICE_URL="https://google.ch" \
   mgdm2oereb-transformator:latest make clean clean_oereblex_xml mgdm2oereb-oereblex
 ```
+**special test with empty zones (it should not output any legendentries nor view services**
+
+```bash
+docker run \
+  --rm \
+  -ti \
+  -u $(id -u):$(id -g) \
+  -v $(pwd):/app \
+  -e MODEL="Planungszonen_V1_1" \
+  -e THEME_CODE="ch.Planungszonen" \
+  -e OEREBLEX_HOST="oereblex.gr.ch" \
+  -e XTF_FILE="ch.Planungszonen.gr.mgdm_oereblex.v1_1.empty_zones.xtf" \
+  -e CATALOG="ch.gr.OeREBKRMkvs_supplement.xml" \
+  -e OEREBLEX_CANTON="gr" \
+  -e DUMMY_OFFICE_NAME="DUMMYOFFICE" \
+  -e DUMMY_OFFICE_URL="https://google.ch" \
+  mgdm2oereb-transformator:latest make clean clean_oereblex_xml mgdm2oereb-oereblex
+```
 
 #### SH
 
