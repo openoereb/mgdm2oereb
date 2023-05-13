@@ -41,4 +41,11 @@ clean:
 	rm -f result/OeREBKRMtrsfr_V2_0.xtf
 	rm -f result/OeREBKRMtrsfr_V2_0.oereblex.xtf
 	rm -f result/OeREBKRMtrsfr_V2_0.mgdm2oereb.log
-
+	rm -f result/flattened_documents.json
+	rm -f result/flattened_files.json
+	rm -f result/oereblex_geolink_unique.json
+	rm -f result/oereblex_geolink_unique_with_oereblex.json
+	rm -f result/unique_authorities.json
+	rm -f result/unique_join_mgdm_tid.json
+	rm -f result/uuid_authorities.json
+	rm -f result/xslt_result.xml
