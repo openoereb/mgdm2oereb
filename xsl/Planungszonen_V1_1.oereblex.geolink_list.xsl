@@ -1,7 +1,8 @@
-<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
-                xmlns:ili="http://www.interlis.ch/INTERLIS2.3"
-                xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                version="1.0">
+<xsl:stylesheet
+        xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+        xmlns:ili="http://www.interlis.ch/INTERLIS2.3"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        version="1.0">
     <xsl:output omit-xml-declaration="yes" method="xml" indent="yes" encoding="UTF-8"/>
     <xsl:strip-space elements="*"/>
     <xsl:param name="oereblex_host"/>

@@ -1,26 +1,16 @@
 <xsl:stylesheet
     xmlns="http://www.interlis.ch/INTERLIS2.3"
     xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
-    xmlns:xd="http://www.oxygenxml.com/ns/doc/xsl"
     xmlns:ili="http://www.interlis.ch/INTERLIS2.3"
-    xmlns:exsl="http://exslt.org/common"
-    extension-element-prefixes="exsl"
-    exclude-result-prefixes="xd ili"
+    exclude-result-prefixes="ili"
     version="1.0">
     <xsl:output method="xml" indent="yes" encoding="UTF-8"/>
     <xsl:strip-space elements="*"/>
     <xsl:param name="catalog"/>
     <xsl:variable name="catalog_doc" select="document(concat('file://', $catalog))"/>
     <xsl:param name="theme_code"/>
-    <xd:doc scope="stylesheet">
-        <xd:desc>
-            <xd:p><xd:b>Created on:</xd:b> Apr 20, 2023</xd:p>
-            <xd:p><xd:b>Author:</xd:b> kalle</xd:p>
-            <xd:p>Transform Nutzungsplanung_V1_2 INTERLIS 2.3 XTF to OeREBKRMtrsfr_V2_0 INTERLIS 2.3 XTF</xd:p>
-        </xd:desc>
-    </xd:doc>
     <xsl:template match="/ili:TRANSFER/ili:DATASECTION">
-        <TRANSFER>
+        <TRANSFER xmlns="http://www.interlis.ch/INTERLIS2.3">
             <HEADERSECTION SENDER="mgdm2oereb" VERSION="2.3">
                 <MODELS>
                     <MODEL NAME="CoordSys" VERSION="2015-11-24" URI="https://www.interlis.ch/models"/>
