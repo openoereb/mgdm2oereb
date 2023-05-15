@@ -65,7 +65,7 @@
             <xsl:apply-templates select="./ili:publiziertAb" mode="copy-no-namespaces"/>
             <xsl:apply-templates select="./ili:publiziertBis" mode="copy-no-namespaces"/>
             <xsl:call-template name="zustaendige_stelle">
-                <xsl:with-param name="basket_id" select="substring-before(../@BID,'.geobasisdaten')"/>
+                <xsl:with-param name="basket_id" select="../@BID"/>
             </xsl:call-template>
             <xsl:call-template name="legende_darstellungsdienst">
                 <xsl:with-param name="typ_ref_id" select="./ili:Typ/@REF"/>
@@ -126,7 +126,7 @@
 
     <xsl:template name="zustaendige_stelle">
         <xsl:param name="basket_id"/>
-        <ZustaendigeStelle REF="AMT_{../../ili:Nutzungsplanung_V1_2.TransferMetadaten[substring-before(@BID, '.transfermetadaten')=$basket_id]/ili:Nutzungsplanung_V1_2.TransferMetadaten.Datenbestand/ili:zustaendigeStelle/@REF}"/>
+        <ZustaendigeStelle REF="AMT_{../../ili:Nutzungsplanung_V1_2.TransferMetadaten/ili:Nutzungsplanung_V1_2.TransferMetadaten.Datenbestand[ili:BasketID/@OID=$basket_id]/ili:zustaendigeStelle/@REF}"/>
     </xsl:template>
 
     <xsl:template name="legende_darstellungsdienst">
