@@ -125,13 +125,8 @@
     <xsl:template name="zustaendige_stelle">
         <xsl:param name="basket_id"/>
 
-        <xsl:variable name="shortened_basket_id" select="substring($basket_id, 7)" /> <!-- is this a safe way to do this? -->
-
-        <xsl:comment>shortened_basket_id=<xsl:value-of select="$shortened_basket_id" />
-        </xsl:comment>
-
         <ZustaendigeStelle
-                REF="AMT_{../../ili:Waldgrenzen_V1_2.TransferMetadaten/ili:Waldgrenzen_V1_2.TransferMetadaten.Datenbestand/ili:BasketID[@OID=$shortened_basket_id]/../ili:zustaendigeStelle/@REF}"/>
+                REF="AMT_{../../ili:Waldgrenzen_V1_2.TransferMetadaten/ili:Waldgrenzen_V1_2.TransferMetadaten.Datenbestand/ili:BasketID[@OID=$basket_id]/../ili:zustaendigeStelle/@REF}"/>
     </xsl:template>
 
     <xsl:template match="ili:Waldgrenzen_V1_2.MultilingualUri/ili:LocalisedText/ili:Waldgrenzen_V1_2.LocalisedUri">

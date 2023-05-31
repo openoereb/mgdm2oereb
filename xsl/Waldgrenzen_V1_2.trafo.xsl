@@ -119,12 +119,8 @@
     <xsl:template name="zustaendige_stelle">
         <xsl:param name="basket_id"/>
 
-        <xsl:variable name="shortened_basket_id" select="substring($basket_id, 7)" /> <!-- is this a safe way to do this? better regexp for this? Test for other cantons -->
-
-        <!-- comment, safe to delete: --> <xsl:comment>shortened_basket_id=<xsl:value-of select="$shortened_basket_id" /></xsl:comment>
-
         <ZustaendigeStelle
-                REF="AMT_{../../ili:Waldgrenzen_V1_2.TransferMetadaten/ili:Waldgrenzen_V1_2.TransferMetadaten.Datenbestand/ili:BasketID[@OID=$shortened_basket_id]/../ili:zustaendigeStelle/@REF}"/>
+                REF="AMT_{../../ili:Waldgrenzen_V1_2.TransferMetadaten/ili:Waldgrenzen_V1_2.TransferMetadaten.Datenbestand/ili:BasketID[@OID=$basket_id]/../ili:zustaendigeStelle/@REF}"/>
     </xsl:template>
 
     <xsl:template match="ili:Waldgrenzen_V1_2.MultilingualUri/ili:LocalisedText/ili:Waldgrenzen_V1_2.LocalisedUri">
@@ -168,8 +164,7 @@
         <xsl:variable name="mgdm_typ_ref"
                       select="../../ili:Waldgrenzen_V1_2.Geobasisdaten/ili:Waldgrenzen_V1_2.Geobasisdaten.Typ_Dokument[ili:Dokument/@REF=$mgdm_dokument_tid]/ili:Typ/@REF"/>
         <xsl:variable name="mgdm_basket_id" select="../../ili:Waldgrenzen_V1_2.Geobasisdaten/ili:Waldgrenzen_V1_2.Geobasisdaten.Typ_Dokument[ili:Dokument/@REF=$mgdm_dokument_tid]/../@BID"/>
-        <xsl:variable name="shortened_basket_id" select="substring($mgdm_basket_id, 7)" /> <!-- is this a safe way to do this? -->
-        <xsl:variable name="mgdm_amt" select="../../ili:Waldgrenzen_V1_2.TransferMetadaten/ili:Waldgrenzen_V1_2.TransferMetadaten.Datenbestand[./ili:BasketID/@OID=$shortened_basket_id]/ili:zustaendigeStelle/@REF"/>
+        <xsl:variable name="mgdm_amt" select="../../ili:Waldgrenzen_V1_2.TransferMetadaten/ili:Waldgrenzen_V1_2.TransferMetadaten.Datenbestand[./ili:BasketID/@OID=$mgdm_basket_id]/ili:zustaendigeStelle/@REF"/>
         <!-- comment, safe to delete:
         <xsl:comment> LOG
             mgdm_dokument_tid="<xsl:value-of select="$mgdm_dokument_tid" />"
