@@ -32,6 +32,17 @@ dummy_office_name = os.environ['DUMMY_OFFICE_NAME']
 dummy_office_url = os.environ['DUMMY_OFFICE_URL']
 
 
+def get_document_title(document):
+    user_title = {}
+    if document['doc.doctype'] == 'decree':
+        for language in document['doc.title']:
+            user_title[language] = f"{document['doc.title'][language]} ({document['file.title'][language]})"
+    else:
+        user_title = document['doc.title']
+
+    return user_title
+
+
 def extract_geolink_id(link):
     return link.split('/')[-1].split('.')[0]
 
@@ -45,52 +56,48 @@ dom = ET.parse(xtf_path)
 xslt = ET.parse(geolink_list_trafo_path)
 transform = ET.XSLT(xslt)
 transformed = transform(dom, oereblex_host=ET.XSLT.strparam(oereb_lex_host))
+with open('/app/result/xslt_result.xml', 'wb+') as f:
+    f.write(ET.tostring(transformed, pretty_print=True))
 
 # unify links to download to prevent too long loading of redundant geolinks
 oereblex_geolink_unique = {}
 for child in transformed.getroot().getchildren():
-    if child.attrib['mgdm_geolink_id'] not in oereblex_geolink_unique:
-        oereblex_geolink_unique[child.attrib['mgdm_geolink_id']] = {}
-        logging.info('LexlinkID {0} was added. '.format(child.attrib['mgdm_geolink_id']))
+    if child.attrib['mgdm_doc_id'] not in oereblex_geolink_unique:
+        oereblex_geolink_unique[child.attrib['mgdm_doc_id']] = {
+            'mgdm_geolink_id': child.attrib['mgdm_geolink_id'],
+            'mgdm_geolinks': []
+        }
+        logging.info(f'Document TID {child.attrib["mgdm_doc_id"]} was added. ')
     else:
-        logging.info('LexlinkID {0} was already present. Skipping...'.format(child.attrib['mgdm_geolink_id']))
-    if child.attrib['mgdm_geolink_language'] not in oereblex_geolink_unique[child.attrib['mgdm_geolink_id']]:
-        attributes = dict(child.attrib)
-        # remove singular ID in favour of the join list match
-        del attributes['mgdm_doc_id']
-        # replace html with xml to get the xml api version of the lexlink
-        attributes['mgdm_geolink'] = attributes['mgdm_geolink'].replace('html', 'xml')
-        oereblex_geolink_unique[child.attrib['mgdm_geolink_id']][child.attrib['mgdm_geolink_language']] = attributes
-        oereblex_geolink_unique[child.attrib['mgdm_geolink_id']][child.attrib['mgdm_geolink_language']]["mgdm_doc_ids"] = [child.attrib['mgdm_doc_id']]
+        logging.info(f'Document TID {child.attrib["mgdm_doc_id"]} was already present. Skipping...')
+    geolink = {
+        'language': child.attrib['mgdm_geolink_language'],
+        'link': child.attrib['mgdm_geolink'].replace('html', 'xml')
+    }
+    if geolink not in oereblex_geolink_unique[child.attrib['mgdm_doc_id']]['mgdm_geolinks']:
+        oereblex_geolink_unique[child.attrib['mgdm_doc_id']]['mgdm_geolinks'].append(geolink)
         logging.info(
             'Language {} for LexlinkID {} was added.'.format(
                 child.attrib['mgdm_geolink_language'],
                 child.attrib['mgdm_geolink_id']
             )
         )
-    else:
-        oereblex_geolink_unique[child.attrib['mgdm_geolink_id']][child.attrib['mgdm_geolink_language']][
-            "mgdm_doc_ids"].append(child.attrib['mgdm_doc_id'])
-        logging.info(
-            'Language {} for LexlinkID {} was already present. Skipping...'.format(
-                child.attrib['mgdm_geolink_language'],
-                child.attrib['mgdm_geolink_id']
-            )
-        )
 counter = 0
+with open('/app/result/oereblex_geolink_unique.json', 'w+') as f:
+    f.write(json.dumps(oereblex_geolink_unique, indent=4))
 count = len(oereblex_geolink_unique.keys())
-logging.info("Start loading {} geolinks from {}".format(count, oereb_lex_host))
-for geolink_id in oereblex_geolink_unique.keys():
-    for language in oereblex_geolink_unique[geolink_id].keys():
-        pointer = oereblex_geolink_unique[geolink_id][language]
-        pointer['documents'] = []
-        geolink = pointer["mgdm_geolink"]
+logging.info(f"Start loading {count} geolinks from {oereb_lex_host}")
+for mgdm_doc_id in oereblex_geolink_unique.keys():
+    for language in oereblex_geolink_unique[mgdm_doc_id]['mgdm_geolinks']:
+        language['documents'] = []
         counter += 1
-        logging.info("Downloading {} ({}/{})".format(geolink_id, counter, count))
-        request = requests.get(geolink)
+        logging.info(
+            f"Downloading {oereblex_geolink_unique[mgdm_doc_id]['mgdm_geolink_id']} ({counter}/{count})"
+        )
+        request = requests.get(language['link'])
         if request.status_code < 200 and request.status_code > 299:
-            raise IOError("Could download documents for {}".format(geolink))
-        logging.info("Successfully downloaded from {}".format(geolink))
+            raise IOError(f"Could download documents for {language['link']}")
+        logging.info(f"Successfully downloaded from {language['link']}")
         xml = request.text.encode(request.encoding)
         oereblex_dom = ET.fromstring(xml)
         for child in oereblex_dom.getchildren():
@@ -123,109 +130,120 @@ for geolink_id in oereblex_geolink_unique.keys():
                             ))
                             file['href'] = new_url
                         document['files'].append(file)
-                pointer['documents'].append(document)
-
+                language['documents'].append(document)
+with open('/app/result/oereblex_geolink_unique_with_oereblex.json', 'w+') as f:
+    f.write(json.dumps(oereblex_geolink_unique, indent=4))
 logging.info("full tree is:\n" + json.dumps(oereblex_geolink_unique, indent=2))
 
 flattened_documents = {}
 
-for geolink_id in oereblex_geolink_unique.keys():
-    
-    for language in oereblex_geolink_unique[geolink_id].keys():
-        mgdm_doc_ids = oereblex_geolink_unique[geolink_id][language]['mgdm_doc_ids']
-        mgdm_geolink = oereblex_geolink_unique[geolink_id][language]['mgdm_geolink']
-        mgdm_geolink_id = oereblex_geolink_unique[geolink_id][language]['mgdm_geolink_id']
-        for document in oereblex_geolink_unique[geolink_id][language]['documents']:
-
-            for file in document['files']:
-                if not flattened_documents.get(document['id']):
-                    flattened_documents[document['id']] = {
-                        "doc.authority": {
-                            language: document.get('authority') or ""
-                        },
-                        "doc.authority_url": {
-                            language: document.get('authority_url') or ""
-                        },
-                        "doc.category": document['category'],
-                        "doc.doctype": document['doctype'],
-                        "doc.enactment_date": document.get('enactment_date') or '1970-01-01',
-                        "doc.federal_level": {
-                            language: document.get('federal_level') or ''
-                        },
-                        "doc.id": document['id'],
-                        "doc.number": {
-                            language: document.get('number') or ''
-                        },
-                        "doc.title": {
-                            language: document['title']
-                        },
-                        "file.category": file["category"],
-                        "file.description": {
-                            language: file.get("description") or ""
-                        },
-                        "file.href": {
-                            language: file["href"]
-                        },
-                        "file.title": {
-                            language: file["title"]
-                        },
-                        "mgdm.geolink_id": mgdm_geolink_id,
-                        "mgdm.geolink": {
-                            language: mgdm_geolink
-                        },
-                        "mgdm.tids": []
-                    }
-                for mgdm_doc_id in mgdm_doc_ids:
-                    if mgdm_doc_id not in flattened_documents[document['id']]["mgdm.tids"]:
-                        flattened_documents[document['id']]["mgdm.tids"].append(mgdm_doc_id)
-                logging.info('Adding a new doc to flattened documents with id {0}.'.format(document['id']))
+for mgdm_doc_id in oereblex_geolink_unique.keys():
+    mgdm_geolink_id = oereblex_geolink_unique[mgdm_doc_id]['mgdm_geolink_id']
+    for language_element in oereblex_geolink_unique[mgdm_doc_id]['mgdm_geolinks']:
+        language = language_element['language']
+        mgdm_geolink = language_element['link']
+        for document in language_element['documents']:
+            internal_doc_id = f'{document["id"]}'
+            if not flattened_documents.get(internal_doc_id):
+                flattened_documents[internal_doc_id] = {
+                    "doc.authority": {
+                        language: document.get('authority') or ""
+                    },
+                    "doc.authority_url": {
+                        language: document.get('authority_url') or ""
+                    },
+                    "doc.category": document['category'],
+                    "doc.doctype": document['doctype'],
+                    "doc.enactment_date": document.get('enactment_date') or '1970-01-01',
+                    "doc.federal_level": {
+                        language: document.get('federal_level') or ''
+                    },
+                    "doc.id": document['id'],
+                    "doc.number": {
+                        language: document.get('number') or ''
+                    },
+                    "doc.title": {
+                        language: document['title']
+                    },
+                    "files": [{"description": {language: file.get("description") or ""}, "href": {language: file["href"]}, "title": {language: file["title"]}} for file in document['files']],
+                    # "file.category": file["category"],
+                    # "file.description": {
+                    #     language: file.get("description") or ""
+                    # },
+                    # "file.href": {
+                    #     language: file["href"]
+                    # },
+                    # "file.title": {
+                    #     language: file["title"]
+                    # },
+                    "mgdm.geolink_id": mgdm_geolink_id,
+                    "mgdm.geolink": {
+                        language: mgdm_geolink
+                    },
+                    "mgdm.tid": mgdm_doc_id
+                }
+                logging.info('Adding a new doc to flattened documents with id {0}.'.format(internal_doc_id))
             else:
-                flattened_documents[document['id']]["doc.authority"][language] = document.get('authority') or ""
-                flattened_documents[document['id']]["doc.authority_url"][language] = document.get('authority_url') or ""
-                flattened_documents[document['id']]["doc.federal_level"][language] = document.get('federal_level') or ''
-                flattened_documents[document['id']]["doc.number"][language] = document.get('number') or ''
-                flattened_documents[document['id']]["doc.title"][language] = document['title']
-                flattened_documents[document['id']]["file.description"][language] = file.get("description") or ""
-                flattened_documents[document['id']]["file.href"][language] = file["href"]
-                flattened_documents[document['id']]["file.title"][language] = file["title"]
-                for mgdm_doc_id in mgdm_doc_ids:
-                    if mgdm_doc_id not in flattened_documents[document['id']]["mgdm.tids"]:
-                        flattened_documents[document['id']]["mgdm.tids"].append(mgdm_doc_id)
-                flattened_documents[document['id']]["mgdm.geolink"][language] = mgdm_geolink
-                logging.info('Document ID {} already in flattened dict. Adding up...'.format(document['id']))
+                flattened_documents[internal_doc_id]["doc.authority"][language] = document.get('authority') or ""
+                flattened_documents[internal_doc_id]["doc.authority_url"][language] = document.get('authority_url') or ""
+                flattened_documents[internal_doc_id]["doc.federal_level"][language] = document.get('federal_level') or ''
+                flattened_documents[internal_doc_id]["doc.number"][language] = document.get('number') or ''
+                flattened_documents[internal_doc_id]["doc.title"][language] = document['title']
+                for index, file in enumerate(document['files']):
+                    flattened_documents[internal_doc_id]["files"][index]["description"][language] = file.get("description") or ""
+                    flattened_documents[internal_doc_id]["files"][index]["href"][language] = file["href"]
+                    flattened_documents[internal_doc_id]["files"][index]["title"][language] = file["title"]
+                # flattened_documents[internal_doc_id]["file.description"][language] = file.get("description") or ""
+                # flattened_documents[internal_doc_id]["file.href"][language] = file["href"]
+                # flattened_documents[internal_doc_id]["file.title"][language] = file["title"]
+                flattened_documents[internal_doc_id]["mgdm.geolink"][language] = mgdm_geolink
+                logging.info('Document ID {} already in flattened dict. Adding up...'.format(internal_doc_id))
 
-uuid_flattened_documents = {}
-for key in flattened_documents:
-    uuid_string = str(uuid.uuid4())
-    uuid_flattened_documents[uuid_string] = flattened_documents[key]
-    uuid_flattened_documents[uuid_string]["doc.id"] = uuid_string
+with open('/app/result/flattened_documents.json', 'w+') as f:
+    f.write(json.dumps(flattened_documents, indent=4))
 
-flattened_documents = uuid_flattened_documents
+flattened_files = {}
+
+for doc_key in flattened_documents:
+    for file in flattened_documents[doc_key]['files']:
+        uuid_string = str(uuid.uuid4())
+        flattened_files[uuid_string] = {
+            "doc.id": uuid_string,
+        }
+        flattened_files[uuid_string].update(flattened_documents[doc_key])
+        for file_key in file:
+            flattened_files[uuid_string][f'file.{file_key}'] = file[file_key]
+        del flattened_files[uuid_string]['files']
+
+with open('/app/result/flattened_files.json', 'w+') as f:
+    f.write(json.dumps(flattened_files, indent=4))
 
 unique_authorities = {}
 
-for key in flattened_documents.keys():
-    identifier = b64_from_string(json.dumps(flattened_documents[key]["doc.authority_url"]))
-    flattened_documents[key]["doc.authority_id"] = identifier
+for key in flattened_files.keys():
+    identifier = b64_from_string(json.dumps(flattened_files[key]["doc.authority_url"]))
+    flattened_files[key]["doc.authority_id"] = identifier
     if identifier not in unique_authorities:
         unique_authorities[identifier] = {
-            "authority_url": flattened_documents[key]["doc.authority_url"],
-            "authority": flattened_documents[key]["doc.authority"]
+            "authority_url": flattened_files[key]["doc.authority_url"],
+            "authority": flattened_files[key]["doc.authority"]
         }
-    del flattened_documents[key]["doc.authority_url"]
-    del flattened_documents[key]["doc.authority"]
+    del flattened_files[key]["doc.authority_url"]
+    del flattened_files[key]["doc.authority"]
+with open('/app/result/unique_authorities.json', 'w+') as f:
+    f.write(json.dumps(unique_authorities, indent=4))
 
 # resolve ambiquity between original docs from mgdm and docs delivered by oereblex
 unique_join_mgdm_tid = {}
 
-for key in flattened_documents.keys():
-    for mgdm_tid in flattened_documents[key]["mgdm.tids"]:
-        if mgdm_tid not in flattened_documents.keys():
-            unique_join_mgdm_tid[mgdm_tid] = []
-for join_key in unique_join_mgdm_tid.keys():
-    for doc_key in flattened_documents.keys():
-        if join_key in flattened_documents[doc_key]["mgdm.tids"]:
-            unique_join_mgdm_tid[join_key].append(doc_key)
+for key in flattened_files.keys():
+    if flattened_files[key]["mgdm.tid"] not in unique_join_mgdm_tid.keys():
+        unique_join_mgdm_tid[flattened_files[key]["mgdm.tid"]] = []
+    if key not in unique_join_mgdm_tid[flattened_files[key]["mgdm.tid"]]:
+        unique_join_mgdm_tid[flattened_files[key]["mgdm.tid"]].append(key)
+
+with open('/app/result/unique_join_mgdm_tid.json', 'w+') as f:
+    f.write(json.dumps(unique_join_mgdm_tid, indent=4))
 
 
 # assign real uuids to elements to have ili valid items in the end
@@ -235,14 +253,17 @@ for auth_key in unique_authorities.keys():
     uuid_string = str(uuid.uuid4())
     uuid_authorities[uuid_string] = unique_authorities[auth_key]
     
-    for doc_key in flattened_documents.keys():
-        if auth_key == flattened_documents[doc_key]["doc.authority_id"]:
-            flattened_documents[doc_key]["doc.authority_id"] = uuid_string
+    for doc_key in flattened_files.keys():
+        if auth_key == flattened_files[doc_key]["doc.authority_id"]:
+            flattened_files[doc_key]["doc.authority_id"] = uuid_string
 
-for key in flattened_documents:
+with open('/app/result/uuid_authorities.json', 'w+') as f:
+    f.write(json.dumps(uuid_authorities, indent=4))
+
+for key in flattened_files:
     is_empty = []
-    for language in flattened_documents[key]["doc.number"].keys():
-        if flattened_documents[key]["doc.number"][language] == '':
+    for language in flattened_files[key]["doc.number"].keys():
+        if flattened_files[key]["doc.number"][language] == '':
             logging.info("Found an empty string for {}".format('.'.join([key, "doc.number", language])))
             is_empty.append('yes')
         else:
@@ -252,7 +273,7 @@ for key in flattened_documents:
         logging.info("Found string for official number in document {}. Not touching it...".format(key))
         continue
     logging.info("All official numbers of document {} are empty. Setting it to None...".format(key))
-    flattened_documents[key]["doc.number"] = None
+    flattened_files[key]["doc.number"] = None
 
 # check for dummy amt (it has empty name and emtpy url) and fix it to be ili valid
 for auth_key in uuid_authorities.keys():
@@ -297,7 +318,7 @@ for auth_key in uuid_authorities.keys():
             )
             uuid_authorities[auth_key]["authority_url"][language_key] = new_url
 
-logging.info("full tree is:\n" + json.dumps(flattened_documents, indent=2))
+logging.info("full tree is:\n" + json.dumps(flattened_files, indent=2))
 logging.info("full tree is:\n" + json.dumps(uuid_authorities, indent=2))
 logging.info("full tree is:\n" + json.dumps(unique_join_mgdm_tid, indent=2))
 
@@ -353,7 +374,7 @@ for key in unique_join_mgdm_tid:
     root.append(mgdm_doc_element)
 
 document_index = 1
-for key in flattened_documents:
+for key in flattened_files:
     document_element = ET.Element('{}.Dokumente.Dokument'.format(OEREB_KRM_MODEL), TID="dokument_{}".format(key))
     root.append(document_element)
     # TODO: improve, to also get documents maybe not in inForce out of oereblex
@@ -365,33 +386,34 @@ for key in flattened_documents:
     document_index += 1
     document_element.append(document_index_element)
     enactment_date_element = ET.Element('publiziertAb')
-    enactment_date_element.text = flattened_documents[key]['doc.enactment_date']
+    enactment_date_element.text = flattened_files[key]['doc.enactment_date']
     document_element.append(enactment_date_element)
-    if flattened_documents[key]['doc.doctype'] == "decree":
+    if flattened_files[key]['doc.doctype'] == "decree":
         doctype = 'Rechtsvorschrift'
-    elif flattened_documents[key]['doc.doctype'] == "edict":
+    elif flattened_files[key]['doc.doctype'] == "edict":
         doctype = 'GesetzlicheGrundlage'
-    elif flattened_documents[key]['doc.doctype'] == "notice":
+    elif flattened_files[key]['doc.doctype'] == "notice":
         doctype = 'Hinweis'
     else:
-        error_msg = 'Unbekannter Dokumenttyp original aus ÖREBlex war: {}'.format(flattened_documents[key]['doc.doctype'])
+        error_msg = 'Unbekannter Dokumenttyp original aus ÖREBlex war: {}'.format(flattened_files[key]['doc.doctype'])
         logging.error(error_msg)
         raise ValueError(error_msg)
+
     doctype_element = ET.Element("Typ")
     doctype_element.text = doctype
     document_element.append(doctype_element)
     title_element = ET.Element("Titel")
-    title_element.append(multilingual_text(flattened_documents[key]['doc.title']))
+    title_element.append(multilingual_text(get_document_title(flattened_files[key])))
     document_element.append(title_element)
-    if flattened_documents[key]['doc.number'] is not None:
+    if flattened_files[key]['doc.number'] is not None:
         official_number_element = ET.Element("OffizielleNr")
-        official_number_element.append(multilingual_text(flattened_documents[key]['doc.number']))
+        official_number_element.append(multilingual_text(flattened_files[key]['doc.number']))
         document_element.append(official_number_element)
     text_at_web_element = ET.Element('TextImWeb')
-    text_at_web_element.append(multilingual_uri(flattened_documents[key]['file.href']))
+    text_at_web_element.append(multilingual_uri(flattened_files[key]['file.href']))
     document_element.append(text_at_web_element)
     document_element.append(
-        ET.Element('ZustaendigeStelle', REF="amt_{}".format(flattened_documents[key]['doc.authority_id']))
+        ET.Element('ZustaendigeStelle', REF="amt_{}".format(flattened_files[key]['doc.authority_id']))
     )
 
 open(result_file_path, "wb+").write(ET.tostring(root, pretty_print=True))
