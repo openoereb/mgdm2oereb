@@ -109,7 +109,7 @@
     <xsl:template name="legende_darstellungsdienst">
         <xsl:param name="typ_ref_id"/> <!-- WG Typ referenced from Waldgrenze_Linie -->
         <xsl:param name="rechtsstatus"/>
-        <xsl:variable name="typ_artcode" select="concat(../ili:Laermempfindlichkeitsstufen_V1_2.Geobasisdaten.Typ[@TID=$typ_ref_id]/ili:Art, '_', $rechtsstatus)" /> <!-- 0 = ausserhalb_Bauzonen, 1 = in_Bauzonen -->
+        <xsl:variable name="typ_artcode" select="concat(../ili:Laermempfindlichkeitsstufen_V1_2.Geobasisdaten.Typ[@TID=$typ_ref_id]/ili:Code, '_', $rechtsstatus)" /> <!-- 0 = ausserhalb_Bauzonen, 1 = in_Bauzonen -->
 
         <!-- comment, safe to delete: -->
         <xsl:comment> LOG
@@ -124,7 +124,8 @@
 
     <xsl:template name="zustaendige_stelle">
         <xsl:param name="basket_id"/>
-        <ZustaendigeStelle REF="AMT_{../../ili:Laermempfindlichkeitsstufen_V1_2.TransferMetadaten[substring-before(@BID, '.transfermetadaten')=$basket_id]/ili:Laermempfindlichkeitsstufen_V1_2.TransferMetadaten.Datenbestand/ili:zustaendigeStelle/@REF}"/>
+        <ZustaendigeStelle
+                REF="AMT_{../../ili:Laermempfindlichkeitsstufen_V1_2.TransferMetadaten/ili:Laermempfindlichkeitsstufen_V1_2.TransferMetadaten.Datenbestand[ili:BasketID/@OID=$basket_id]/ili:ZustaendigeStelle/@REF}"/>
     </xsl:template>
 
     <xsl:template match="ili:Laermempfindlichkeitsstufen_V1_2.MultilingualUri/ili:LocalisedText/ili:Laermempfindlichkeitsstufen_V1_2.LocalisedUri">
@@ -173,7 +174,7 @@
             mgdm_typ_ref="<xsl:value-of select="$mgdm_typ_ref" />"
         </xsl:comment>
 
-        <xsl:for-each select="../../ili:Laermempfindlichkeitsstufen_V1_2.Geobasisdaten/ili:Laermempfindlichkeitsstufen_V1_2.Geobasisdaten.Waldgrenze_Linie[ili:WG/@REF=$mgdm_typ_ref]">
+        <xsl:for-each select="../../ili:Laermempfindlichkeitsstufen_V1_2.Geobasisdaten/ili:Laermempfindlichkeitsstufen_V1_2.Geobasisdaten.Laermempfindlichkeit_Zonenflaeche[ili:Typ/@REF=$mgdm_typ_ref]">
             <xsl:call-template name="hinweis_vorschrift">
                 <xsl:with-param name="mgdm_dokument_tid" select="$mgdm_dokument_tid"/>
             </xsl:call-template>
