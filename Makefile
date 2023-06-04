@@ -9,6 +9,7 @@ result/oereblex.xml: xsl/oereblex.download.py
 	OEREBLEX_HOST="$(OEREBLEX_HOST)" \
 	OEREBLEX_CANTON="$(OEREBLEX_CANTON)" \
 	THEME_CODE="$(THEME_CODE)" \
+	TARGET_BASKET_ID="$(TARGET_BASKET_ID)" \
 	DUMMY_OFFICE_NAME="$(DUMMY_OFFICE_NAME)" \
 	DUMMY_OFFICE_URL="$(DUMMY_OFFICE_URL)" \
 	python3 $^
@@ -17,6 +18,7 @@ clean_oereblex_xml: result/oereblex.xml
 
 result/OeREBKRMtrsfr_V2_0.oereblex.xtf: xsl/$(MODEL).oereblex.trafo.xsl
 	xsltproc \
+		--stringparam target_basket_id "$(TARGET_BASKET_ID)" \
 		--stringparam theme_code "$(THEME_CODE)" \
 		--stringparam oereblex_host "$(OEREBLEX_HOST)" \
 		--stringparam model "$(MODEL)" \
@@ -28,6 +30,7 @@ mgdm2oereb-oereblex: result/OeREBKRMtrsfr_V2_0.oereblex.xtf
 
 result/OeREBKRMtrsfr_V2_0.xtf: xsl/$(MODEL).trafo.xsl
 	xsltproc \
+		--stringparam target_basket_id "$(TARGET_BASKET_ID)" \
 		--stringparam theme_code "$(THEME_CODE)" \
 		--stringparam model "$(MODEL)" \
 		--stringparam catalog "$(CATALOG_PATH)" \

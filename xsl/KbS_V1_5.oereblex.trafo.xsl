@@ -11,6 +11,7 @@
     <xsl:param name="code_texte_doc" select="document('file:///app/xsl/KbS_V1_5.katalog.code_texte.xml')"/>
     <xsl:variable name="darstellungsdienst_tid" select="$darstellungsdienst_doc//DATASECTION/OeREBKRMtrsfr_V2_0.Transferstruktur.DarstellungsDienst[1]/@TID"/>
     <xsl:param name="theme_code"/>
+    <xsl:param name="target_basket_id"/>
     <xsl:param name="oereblex_host"/>
     <xsl:param name="rechts_status" select="'inKraft'"/>
     <xsl:variable name="oereblex_url" select="concat($oereblex_host,'/api/geolinks/')"/>
@@ -38,7 +39,7 @@
                 </MODELS>
             </HEADERSECTION>
             <DATASECTION>
-                <OeREBKRMtrsfr_V2_0.Transferstruktur BID="{$theme_code}">
+                <OeREBKRMtrsfr_V2_0.Transferstruktur BID="{$target_basket_id}">
                     <xsl:apply-templates select="ili:KbS_V1_5.Belastete_Standorte"/>
                     <xsl:for-each
                             select="$code_texte_doc//ili:TRANSFER/ili:DATASECTION/ili:KbS_V1_5.Codelisten/ili:KbS_V1_5.Codelisten.StatusAltlV_Definition">

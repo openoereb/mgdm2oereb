@@ -12,6 +12,7 @@
     <xsl:variable name="catalog_doc" select="document(concat('file://', $catalog))"/>
     <xsl:param name="code_texte_doc" select="document('file:///app/xsl/SH_Waldreservate_Catalogues_V1_2.xml')"/>
     <xsl:param name="theme_code"/>
+    <xsl:param name="target_basket_id"/>
     <xsl:param name="oereblex_host"/>
     <xsl:variable name="oereblex_url" select="concat($oereblex_host,'/api/geolinks/')"/>
     <xsl:template match="/ili:TRANSFER/ili:DATASECTION">
@@ -38,7 +39,7 @@
                 </MODELS>
             </HEADERSECTION>
             <DATASECTION>
-                <OeREBKRMtrsfr_V2_0.Transferstruktur BID="{$theme_code}">
+                <OeREBKRMtrsfr_V2_0.Transferstruktur BID="{$target_basket_id}">
                     <xsl:apply-templates select="ili:SH_Waldreservate_V1_2.Waldreservate"/>
                     <xsl:call-template name="supplement"/>
                     <xsl:copy-of select="$oereblexdata//DATASECTION/OeREBKRM_V2_0.Amt.Amt"/>
