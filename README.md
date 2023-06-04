@@ -389,3 +389,43 @@ docker run \
 -e DUMMY_OFFICE_URL="https://google.ch" \
 mgdm2oereb-transformator:latest make clean clean_oereblex_xml mgdm2oereb-oereblex
 ```
+
+## Gewässerraum
+
+### v1.1 ÖREBlex
+
+#### SH
+
+```bash
+docker run \
+  --rm \
+  -ti \
+  -u $(id -u):$(id -g) \
+  -v $(pwd):/app \
+  -e MODEL="Gewaesserraum_V1_1" \
+  -e THEME_CODE="ch.Gewaesserraum" \
+  -e OEREBLEX_HOST="oereblex.sh.ch" \
+  -e XTF_FILE="ch.Gewaesserraum.sh.mgdm_oereblex.v1_1.xtf" \
+  -e CATALOG="ch.sh.OeREBKRMkvs_supplement.xml" \
+  -e OEREBLEX_CANTON="sh" \
+  -e DUMMY_OFFICE_NAME="DUMMYOFFICE" \
+  -e DUMMY_OFFICE_URL="https://google.ch" \
+  mgdm2oereb-transformator:latest make clean clean_oereblex_xml mgdm2oereb-oereblex
+```
+
+### v1.1
+
+#### SH
+
+```bash
+docker run \
+  --rm \
+  -ti \
+  -u $(id -u):$(id -g) \
+  -v $(pwd):/app \
+  -e MODEL="Gewaesserraum_V1_1" \
+  -e THEME_CODE="ch.Gewaesserraum" \
+  -e XTF_FILE="ch.Gewaesserraum.sh.mgdm.v1_1.xtf" \
+  -e CATALOG="ch.sh.OeREBKRMkvs_supplement.xml" \
+  mgdm2oereb-transformator:latest make clean mgdm2oereb
+```
