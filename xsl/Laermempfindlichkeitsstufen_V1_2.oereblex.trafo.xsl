@@ -56,28 +56,36 @@
     </xsl:template>
 
     <xsl:template match="ili:Laermempfindlichkeitsstufen_V1_2.Geobasisdaten/ili:Laermempfindlichkeitsstufen_V1_2.Geobasisdaten.Laermempfindlichkeit_Zonenflaeche">
-        <OeREBKRMtrsfr_V2_0.Transferstruktur.Eigentumsbeschraenkung TID="eigentumsbeschraenkung_{@TID}">
-            <xsl:apply-templates select="./ili:Rechtsstatus" mode="copy-no-namespaces"/>
-            <xsl:apply-templates select="./ili:publiziertAb" mode="copy-no-namespaces"/>
-            <xsl:apply-templates select="./ili:publiziertBis" mode="copy-no-namespaces"/>
-            <xsl:call-template name="zustaendige_stelle">
-                <xsl:with-param name="basket_id" select="../@BID"/>
-            </xsl:call-template>
-            <xsl:call-template name="legende_darstellungsdienst">
-                <xsl:with-param name="typ_ref_id" select="./ili:Typ/@REF"/>
-                <xsl:with-param name="rechtsstatus" select="./ili:Rechtsstatus"/>
-            </xsl:call-template>
-        </OeREBKRMtrsfr_V2_0.Transferstruktur.Eigentumsbeschraenkung>
-        <OeREBKRMtrsfr_V2_0.Transferstruktur.Geometrie TID="geometrie_{@TID}">
-            <Flaeche>
-                <xsl:apply-templates select="./ili:Geometrie/ili:SURFACE" mode="copy-no-namespaces"/>
-            </Flaeche>
+        <xsl:variable name="typ_ref_id" select="./ili:Typ/@REF"/>
+        <xsl:variable name="typ_node" select="../ili:Laermempfindlichkeitsstufen_V1_2.Geobasisdaten.Typ[@TID=$typ_ref_id]"/>
+        <!--<xsl:comment> LOG
+            typ_ref_id="<xsl:value-of select="$typ_ref_id" />"
+            code="<xsl:value-of select="$typ_node/ili:Code/text()" />"
+        </xsl:comment>-->
+        <xsl:if test="$typ_node/ili:Code/text()!='Keine_ES'">
+            <OeREBKRMtrsfr_V2_0.Transferstruktur.Eigentumsbeschraenkung TID="eigentumsbeschraenkung_{@TID}">
+                <xsl:apply-templates select="./ili:Rechtsstatus" mode="copy-no-namespaces"/>
+                <xsl:apply-templates select="./ili:publiziertAb" mode="copy-no-namespaces"/>
+                <xsl:apply-templates select="./ili:publiziertBis" mode="copy-no-namespaces"/>
+                <xsl:call-template name="zustaendige_stelle">
+                    <xsl:with-param name="basket_id" select="../@BID"/>
+                </xsl:call-template>
+                <xsl:call-template name="legende_darstellungsdienst">
+                    <xsl:with-param name="typ_ref_id" select="./ili:Typ/@REF"/>
+                    <xsl:with-param name="rechtsstatus" select="./ili:Rechtsstatus"/>
+                </xsl:call-template>
+            </OeREBKRMtrsfr_V2_0.Transferstruktur.Eigentumsbeschraenkung>
+            <OeREBKRMtrsfr_V2_0.Transferstruktur.Geometrie TID="geometrie_{@TID}">
+                <Flaeche>
+                    <xsl:apply-templates select="./ili:Geometrie/ili:SURFACE" mode="copy-no-namespaces"/>
+                </Flaeche>
 
-            <xsl:apply-templates select="./ili:Rechtsstatus" mode="copy-no-namespaces"/>
-            <xsl:apply-templates select="./ili:publiziertAb" mode="copy-no-namespaces"/>
-            <xsl:apply-templates select="./ili:publiziertBis" mode="copy-no-namespaces"/>
-            <Eigentumsbeschraenkung REF="eigentumsbeschraenkung_{@TID}"/>
-        </OeREBKRMtrsfr_V2_0.Transferstruktur.Geometrie>
+                <xsl:apply-templates select="./ili:Rechtsstatus" mode="copy-no-namespaces"/>
+                <xsl:apply-templates select="./ili:publiziertAb" mode="copy-no-namespaces"/>
+                <xsl:apply-templates select="./ili:publiziertBis" mode="copy-no-namespaces"/>
+                <Eigentumsbeschraenkung REF="eigentumsbeschraenkung_{@TID}"/>
+            </OeREBKRMtrsfr_V2_0.Transferstruktur.Geometrie>
+        </xsl:if>
     </xsl:template>
 
     <xsl:template name="supplement">
@@ -204,14 +212,18 @@
 
         <xsl:variable name="mgdm_dokument_tid" select="./ili:Dokument/@REF"/>
         <xsl:variable name="mgdm_tid" select="./ili:Geometrie/@REF"/>
-        <xsl:for-each select="$oereblexdata//DATASECTION/MgdmDoc[@REF=$mgdm_dokument_tid]">
-            <xsl:for-each select="./OereblexDoc">
-                <OeREBKRMtrsfr_V2_0.Transferstruktur.HinweisVorschrift>
-                    <Eigentumsbeschraenkung REF="eigentumsbeschraenkung_{$mgdm_tid}"/>
-                    <Vorschrift REF="{./@REF}"/>
-                </OeREBKRMtrsfr_V2_0.Transferstruktur.HinweisVorschrift>
+        <xsl:variable name="typ_ref_id" select="../ili:Laermempfindlichkeitsstufen_V1_2.Geobasisdaten.Laermempfindlichkeit_Zonenflaeche[@TID=$mgdm_tid]/ili:Typ/@REF"/>
+        <xsl:variable name="typ_node" select="../ili:Laermempfindlichkeitsstufen_V1_2.Geobasisdaten.Typ[@TID=$typ_ref_id]"/>
+        <xsl:if test="$typ_node/ili:Code/text()!='Keine_ES'">
+            <xsl:for-each select="$oereblexdata//DATASECTION/MgdmDoc[@REF=$mgdm_dokument_tid]">
+                <xsl:for-each select="./OereblexDoc">
+                    <OeREBKRMtrsfr_V2_0.Transferstruktur.HinweisVorschrift>
+                        <Eigentumsbeschraenkung REF="eigentumsbeschraenkung_{$mgdm_tid}"/>
+                        <Vorschrift REF="{./@REF}"/>
+                    </OeREBKRMtrsfr_V2_0.Transferstruktur.HinweisVorschrift>
+                </xsl:for-each>
             </xsl:for-each>
-        </xsl:for-each>
+        </xsl:if>
     </xsl:template>
     <xsl:template match="*" mode="copy-no-namespaces">
         <xsl:element name="{local-name()}">
