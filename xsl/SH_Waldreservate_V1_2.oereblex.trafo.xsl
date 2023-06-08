@@ -10,7 +10,9 @@
     <xsl:variable name="oereblexdata" select="document(concat('file://', $oereblex_output))"/>
     <xsl:param name="catalog"/>
     <xsl:variable name="catalog_doc" select="document(concat('file://', $catalog))"/>
-    <xsl:param name="code_texte_doc" select="document('file:///app/xsl/SH_Waldreservate_Catalogues_V1_2.xml')"/>
+
+    <xsl:param name="xsl_path"/>
+    <xsl:variable name="code_texte_doc" select="document(concat('file://', $xsl_path, '/', 'SH_Waldreservate_Catalogues_V1_2.xml'))"/>
     <xsl:param name="theme_code"/>
     <xsl:param name="target_basket_id"/>
     <xsl:param name="oereblex_host"/>
