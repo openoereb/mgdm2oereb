@@ -1,4 +1,5 @@
 
+OUTPUT_XTF_PATH=$(shell pwd)/result/OeREBKRMtrsfr_V2_0.xtf
 XTF_PATH=data/$(XTF_FILE)
 CATALOG_PATH=$(shell pwd)/catalogs/$(CATALOG)
 
@@ -16,7 +17,7 @@ result/oereblex.xml: xsl/oereblex.download.py
 
 clean_oereblex_xml: result/oereblex.xml
 
-result/OeREBKRMtrsfr_V2_0.oereblex.xtf: xsl/$(MODEL).oereblex.trafo.xsl
+mgdm2oereb-oereblex: xsl/$(MODEL).oereblex.trafo.xsl
 	xsltproc \
 		--stringparam target_basket_id "$(TARGET_BASKET_ID)" \
 		--stringparam theme_code "$(THEME_CODE)" \
@@ -25,20 +26,20 @@ result/OeREBKRMtrsfr_V2_0.oereblex.xtf: xsl/$(MODEL).oereblex.trafo.xsl
 		--stringparam catalog "$(CATALOG_PATH)" \
 		--stringparam oereblex_output $(shell pwd)/"result/oereblex.xml" \
 		--stringparam xsl_path $(shell pwd)/"xsl" \
-		$^ $(XTF_PATH) > $@
+		$^ $(XTF_PATH) > $(OUTPUT_XTF_PATH)
 
-mgdm2oereb-oereblex: result/OeREBKRMtrsfr_V2_0.oereblex.xtf
 
-result/OeREBKRMtrsfr_V2_0.xtf: xsl/$(MODEL).trafo.xsl
+mgdm2oereb: xsl/$(MODEL).trafo.xsl
 	xsltproc \
 		--stringparam target_basket_id "$(TARGET_BASKET_ID)" \
 		--stringparam theme_code "$(THEME_CODE)" \
 		--stringparam model "$(MODEL)" \
 		--stringparam catalog "$(CATALOG_PATH)" \
 		--stringparam xsl_path $(shell pwd)/"xsl" \
-		$^ $(XTF_PATH) > $@
+		$^ $(XTF_PATH) > $(OUTPUT_XTF_PATH)
 
-mgdm2oereb: result/OeREBKRMtrsfr_V2_0.xtf
+validate: $(OUTPUT_XTF_PATH)
+	cd /tmp && java -jar /ilivalidator/ilivalidator.jar --verbose --trace --allObjectsAccessible $(OUTPUT_XTF_PATH)
 
 .PHONY: clean
 clean:
