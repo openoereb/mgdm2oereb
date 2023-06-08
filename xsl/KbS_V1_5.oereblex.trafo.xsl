@@ -179,7 +179,7 @@
         </OeREBKRM_V2_0.LocalisedUri>
     </xsl:template>
 
-    <xsl:template match="ili:KbS_V1_5.MultilingualUri">
+    <xsl:template match="ili:KbS_V1_5.Belastete_Standorte.MultilingualUri">
         <OeREBKRM_V2_0.MultilingualUri>
             <LocalisedText>
                 <xsl:apply-templates select="ili:LocalisedText/ili:Planungszonen_V1_1.LocalisedUri"/>
