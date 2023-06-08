@@ -24,6 +24,7 @@ result/OeREBKRMtrsfr_V2_0.oereblex.xtf: xsl/$(MODEL).oereblex.trafo.xsl
 		--stringparam model "$(MODEL)" \
 		--stringparam catalog "$(CATALOG_PATH)" \
 		--stringparam oereblex_output $(shell pwd)/"result/oereblex.xml" \
+		--stringparam xsl_path $(shell pwd)/"xsl" \
 		$^ $(XTF_PATH) > $@
 
 mgdm2oereb-oereblex: result/OeREBKRMtrsfr_V2_0.oereblex.xtf
@@ -34,6 +35,7 @@ result/OeREBKRMtrsfr_V2_0.xtf: xsl/$(MODEL).trafo.xsl
 		--stringparam theme_code "$(THEME_CODE)" \
 		--stringparam model "$(MODEL)" \
 		--stringparam catalog "$(CATALOG_PATH)" \
+		--stringparam xsl_path $(shell pwd)/"xsl" \
 		$^ $(XTF_PATH) > $@
 
 mgdm2oereb: result/OeREBKRMtrsfr_V2_0.xtf

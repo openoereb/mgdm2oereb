@@ -7,7 +7,7 @@
     <xsl:output method="xml" indent="yes" encoding="UTF-8"/>
     <xsl:strip-space elements="*"/>
     <xsl:param name="oereblex_output"/>
-    <xsl:param name="oereblexdata" select="document('file:///app/result/oereblex.xml')"/>
+    <xsl:param name="oereblexdata" select="document(concat('file://',$oereblex_output))"/>
     <xsl:param name="catalog"/>
     <xsl:variable name="catalog_doc" select="document(concat('file://', $catalog))"/>
     <xsl:param name="theme_code"/>
