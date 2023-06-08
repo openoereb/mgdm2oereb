@@ -56,7 +56,7 @@ docker run \
     -e TARGET_BASKET_ID="ch.BelasteteStandorte" \
     -e OEREBLEX_HOST="oereblex.sh.ch" \
     -e XTF_FILE="ch.BelasteteStandorte.sh.mgdm_oereblex.v1_5.xtf" \
-    -e OEREBLEX_CANTON="gr" \
+    -e OEREBLEX_CANTON="sh" \
     -e DUMMY_OFFICE_NAME="DUMMYOFFICE" \
     -e DUMMY_OFFICE_URL="https://google.ch" \
     mgdm2oereb-transformator:latest make clean clean_oereblex_xml mgdm2oereb-oereblex
@@ -69,7 +69,18 @@ Unpack the contained xtf and replace it with the packed one.
 
 ### v1.5
 
-TODO
+```bash
+docker run \
+    --rm \
+    -ti \
+    -u $(id -u):$(id -g) \
+    -v $(pwd):/app \
+    -e MODEL="KbS_V1_5" \
+    -e THEME_CODE="ch.BelasteteStandorte" \
+    -e TARGET_BASKET_ID="ch.BelasteteStandorte" \
+    -e XTF_FILE="ch.BelasteteStandorte.sh.mgdm.v1_5.xtf" \
+    -e CATALOG="ch.sh.OeREBKRMkvs_supplement.xml" \
+    mgdm2oereb-transformator:latest make clean mgdm2oereb
 
 ## Planungszonen
 
