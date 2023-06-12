@@ -152,14 +152,37 @@
     <xsl:template match="ili:Gewaesserraum_V1_1.GewR/ili:Gewaesserraum_V1_1.GewR.Amt">
         <OeREBKRM_V2_0.Amt.Amt TID="AMT_{./@TID}">
             <xsl:apply-templates select="ili:Name" mode="copy-no-namespaces"/>
-            <xsl:apply-templates select="ili:AmtImWeb"/>
+            <AmtImWeb>
+              <OeREBKRM_V2_0.MultilingualUri>
+                <LocalisedText>
+                  <OeREBKRM_V2_0.LocalisedUri>
+                    <Language>de</Language>
+                    <Text><xsl:value-of select="ili:AmtImWeb"/></Text>
+                  </OeREBKRM_V2_0.LocalisedUri>
+                  <OeREBKRM_V2_0.LocalisedUri>
+                    <Language>fr</Language>
+                    <Text><xsl:value-of select="ili:AmtImWeb"/></Text>
+                  </OeREBKRM_V2_0.LocalisedUri>
+                  <OeREBKRM_V2_0.LocalisedUri>
+                    <Language>it</Language>
+                    <Text><xsl:value-of select="ili:AmtImWeb"/></Text>
+                  </OeREBKRM_V2_0.LocalisedUri>
+                  <OeREBKRM_V2_0.LocalisedUri>
+                    <Language>rm</Language>
+                    <Text><xsl:value-of select="ili:AmtImWeb"/></Text>
+                  </OeREBKRM_V2_0.LocalisedUri>
+                  <OeREBKRM_V2_0.LocalisedUri>
+                    <Language>en</Language>
+                    <Text><xsl:value-of select="ili:AmtImWeb"/></Text>
+                  </OeREBKRM_V2_0.LocalisedUri>
+                </LocalisedText>
+              </OeREBKRM_V2_0.MultilingualUri>
+            </AmtImWeb>
+            <xsl:apply-templates select="ili:Strasse" mode="copy-no-namespaces"/>
+            <xsl:apply-templates select="ili:Hausnr" mode="copy-no-namespaces"/>
+            <xsl:apply-templates select="ili:PLZ" mode="copy-no-namespaces"/>
+            <xsl:apply-templates select="ili:Ort" mode="copy-no-namespaces"/>
         </OeREBKRM_V2_0.Amt.Amt>
-    </xsl:template>
-
-    <xsl:template match="ili:Gewaesserraum_V1_1.GewR/ili:Gewaesserraum_V1_1.GewR.Amt/ili:AmtImWeb">
-        <AmtImWeb>
-            <xsl:apply-templates select="ili:Gewaesserraum_V1_1.GewR.MultilingualUri"/>
-        </AmtImWeb>
     </xsl:template>
 
     <xsl:template match="ili:Gewaesserraum_V1_1.GewR/ili:Gewaesserraum_V1_1.GewR.Dokument">
