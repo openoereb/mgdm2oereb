@@ -119,8 +119,12 @@
         <xsl:variable name="legende_tid" select="$catalog_doc//ili:TRANSFER/ili:DATASECTION/ili:OeREBKRMlegdrst_V2_0.Transferstruktur/ili:OeREBKRMlegdrst_V2_0.Transferstruktur.LegendeEintrag[ili:Thema=$theme_code][ili:ArtCode=$typ_artcode]/@TID"/>
         <xsl:variable name="darstellungsdienst_tid" select="$catalog_doc//ili:TRANSFER/ili:DATASECTION/ili:OeREBKRMlegdrst_V2_0.Transferstruktur/ili:OeREBKRMlegdrst_V2_0.Transferstruktur.LegendeEintrag[ili:Thema=$theme_code][ili:ArtCode=$typ_artcode]/ili:DarstellungsDienst/@REF"/>
 
-        <Legende REF="{$legende_tid}"/>
-        <DarstellungsDienst REF="{$darstellungsdienst_tid}"/>
+        <xsl:if test="$legende_tid">
+            <Legende REF="{$legende_tid}"/>
+        </xsl:if>
+        <xsl:if test="$darstellungsdienst_tid">
+            <DarstellungsDienst REF="{$darstellungsdienst_tid}"/>
+        </xsl:if>
     </xsl:template>
 
     <xsl:template match="ili:SH_Waldreservate_V1_2.Waldreservate.MultilingualUri/ili:LocalisedText/ili:SH_Waldreservate_V1_2.Waldreservate.LocalisedUri">
