@@ -111,8 +111,12 @@
         <!--<xsl:comment><xsl:value-of select="$typ_art_code"/></xsl:comment>-->
         <xsl:variable name="legende_tid" select="$catalog_doc//ili:TRANSFER/ili:DATASECTION/ili:OeREBKRMlegdrst_V2_0.Transferstruktur/ili:OeREBKRMlegdrst_V2_0.Transferstruktur.LegendeEintrag[ili:Thema=$theme_code][ili:ArtCode=$typ_art_code]/@TID"/>
         <xsl:variable name="darstellungsdienst_tid" select="$catalog_doc//ili:TRANSFER/ili:DATASECTION/ili:OeREBKRMlegdrst_V2_0.Transferstruktur/ili:OeREBKRMlegdrst_V2_0.Transferstruktur.LegendeEintrag[ili:Thema=$theme_code][ili:ArtCode=$typ_art_code]/ili:DarstellungsDienst/@REF"/>
-        <Legende REF="{$legende_tid}"/>
-        <DarstellungsDienst REF="{$darstellungsdienst_tid}"/>
+        <xsl:if test="$legende_tid">
+            <Legende REF="{$legende_tid}"/>
+        </xsl:if>
+        <xsl:if test="$darstellungsdienst_tid">
+            <DarstellungsDienst REF="{$darstellungsdienst_tid}"/>
+        </xsl:if>
     </xsl:template>
 
     <xsl:template name="zustaendige_stelle">

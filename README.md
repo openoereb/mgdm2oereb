@@ -59,7 +59,7 @@ docker run \
     -e OEREBLEX_CANTON="sh" \
     -e DUMMY_OFFICE_NAME="DUMMYOFFICE" \
     -e DUMMY_OFFICE_URL="https://google.ch" \
-    mgdm2oereb-transformator:latest make clean clean_oereblex_xml mgdm2oereb-oereblex
+    mgdm2oereb-transformator:latest make clean clean_oereblex_xml mgdm2oereb-oereblex validate
 ```
 
 Be aware, that the packed test data might come out of sync to ÖREBlex. In this case download a newer Version
@@ -80,8 +80,8 @@ docker run \
     -e TARGET_BASKET_ID="ch.BelasteteStandorte" \
     -e XTF_FILE="ch.BelasteteStandorte.sh.mgdm.v1_5.xtf" \
     -e CATALOG="ch.sh.OeREBKRMkvs_supplement.xml" \
-    mgdm2oereb-transformator:latest make clean mgdm2oereb
-
+    mgdm2oereb-transformator:latest make clean mgdm2oereb validate
+```
 ## Planungszonen
 
 ### v1.1 ÖREBlex
@@ -103,7 +103,7 @@ docker run \
     -e OEREBLEX_CANTON="gr" \
     -e DUMMY_OFFICE_NAME="DUMMYOFFICE" \
     -e DUMMY_OFFICE_URL="https://google.ch" \
-    mgdm2oereb-transformator:latest make clean clean_oereblex_xml mgdm2oereb-oereblex
+    mgdm2oereb-transformator:latest make clean clean_oereblex_xml mgdm2oereb-oereblex validate
 ```
 **special test with empty zones (it should not output any legendentries nor view services**
 
@@ -122,7 +122,7 @@ docker run \
     -e OEREBLEX_CANTON="gr" \
     -e DUMMY_OFFICE_NAME="DUMMYOFFICE" \
     -e DUMMY_OFFICE_URL="https://google.ch" \
-    mgdm2oereb-transformator:latest make clean clean_oereblex_xml mgdm2oereb-oereblex
+    mgdm2oereb-transformator:latest make clean clean_oereblex_xml mgdm2oereb-oereblex validate
 ```
 
 #### SH
@@ -142,7 +142,7 @@ docker run \
     -e OEREBLEX_CANTON="sh" \
     -e DUMMY_OFFICE_NAME="DUMMYOFFICE" \
     -e DUMMY_OFFICE_URL="https://google.ch" \
-    mgdm2oereb-transformator:latest make clean clean_oereblex_xml mgdm2oereb-oereblex
+    mgdm2oereb-transformator:latest make clean clean_oereblex_xml mgdm2oereb-oereblex validate
 ```
 
 Frische Daten können hier heruntergeladen werden:
@@ -163,7 +163,7 @@ docker run \
     -e TARGET_BASKET_ID="ch.Planungszonen" \
     -e XTF_FILE="ch.Planungszonen.sh.mgdm.v1_1.xtf" \
     -e CATALOG="ch.sh.OeREBKRMkvs_supplement.xml" \
-    mgdm2oereb-transformator:latest make clean mgdm2oereb
+    mgdm2oereb-transformator:latest make clean mgdm2oereb validate
 ```
 
 ## Nutzungsplanung
@@ -187,7 +187,7 @@ docker run \
     -e OEREBLEX_CANTON="sh" \
     -e DUMMY_OFFICE_NAME="DUMMYOFFICE" \
     -e DUMMY_OFFICE_URL="https://google.ch" \
-    mgdm2oereb-transformator:latest make clean clean_oereblex_xml mgdm2oereb-oereblex 
+    mgdm2oereb-transformator:latest make clean clean_oereblex_xml mgdm2oereb-oereblex validate 
 ```
 
 ### v1.2
@@ -205,7 +205,7 @@ docker run \
     -e TARGET_BASKET_ID="ch.tha.Nutzungsplanung" \
     -e XTF_FILE="ch.Nutzungsplanung.sh.tha.mgdm.v1_2.xtf" \
     -e CATALOG="ch.sh.OeREBKRMkvs_supplement.xml" \
-    mgdm2oereb-transformator:latest make clean mgdm2oereb
+    mgdm2oereb-transformator:latest make clean mgdm2oereb validate
 ```
 
 ## Statische Waldgrenzen
@@ -229,7 +229,7 @@ docker run \
     -e OEREBLEX_CANTON="sh" \
     -e DUMMY_OFFICE_NAME="DUMMYOFFICE" \
     -e DUMMY_OFFICE_URL="https://google.ch" \
-    mgdm2oereb-transformator:latest make clean clean_oereblex_xml mgdm2oereb-oereblex 
+    mgdm2oereb-transformator:latest make clean clean_oereblex_xml mgdm2oereb-oereblex validate 
 ```
 
 ### v1.2
@@ -247,7 +247,7 @@ docker run \
     -e TARGET_BASKET_ID="ch.StatischeWaldgrenzen" \
     -e XTF_FILE="ch.Waldgrenzen.sh.mgdm.v1_2.xtf" \
     -e CATALOG="ch.sh.OeREBKRMkvs_supplement.xml" \
-    mgdm2oereb-transformator:latest make clean mgdm2oereb
+    mgdm2oereb-transformator:latest make clean mgdm2oereb validate
 ```
 
 ## Lärmempfindlichkeitsstufen
@@ -271,7 +271,7 @@ docker run \
     -e OEREBLEX_CANTON="sh" \
     -e DUMMY_OFFICE_NAME="DUMMYOFFICE" \
     -e DUMMY_OFFICE_URL="https://google.ch" \
-    mgdm2oereb-transformator:latest make clean clean_oereblex_xml mgdm2oereb-oereblex 
+    mgdm2oereb-transformator:latest make clean clean_oereblex_xml mgdm2oereb-oereblex validate 
 ```
 
 ### v1.2
@@ -289,7 +289,7 @@ docker run \
     -e TARGET_BASKET_ID="ch.tha.Laermempfindlichkeitsstufen" \
     -e XTF_FILE="ch.Laermempfindlichkeitsstufen.sh.tha.mgdm.v1_2.xtf" \
     -e CATALOG="ch.sh.OeREBKRMkvs_supplement.xml" \
-    mgdm2oereb-transformator:latest make clean mgdm2oereb
+    mgdm2oereb-transformator:latest make clean mgdm2oereb validate
 ```
 
 ## Planerischer Gewässerschutz - Grundwasserschutzzonen
@@ -313,7 +313,7 @@ docker run \
     -e OEREBLEX_CANTON="sh" \
     -e DUMMY_OFFICE_NAME="DUMMYOFFICE" \
     -e DUMMY_OFFICE_URL="https://google.ch" \
-    mgdm2oereb-transformator:latest make clean clean_oereblex_xml mgdm2oereb-oereblex 
+    mgdm2oereb-transformator:latest make clean clean_oereblex_xml mgdm2oereb-oereblex validate 
 ```
 
 ### v1.2
@@ -331,7 +331,7 @@ docker run \
     -e TARGET_BASKET_ID="ch.Grundwasserschutzzonen" \
     -e XTF_FILE="ch.Planerischergewaesserschutz.sh.mgdm.v1_2.xtf" \
     -e CATALOG="ch.sh.OeREBKRMkvs_supplement.xml" \
-    mgdm2oereb-transformator:latest make clean mgdm2oereb
+    mgdm2oereb-transformator:latest make clean mgdm2oereb validate
 ```
 
 ## Planerischer Gewässerschutz - Grundwasserschutzareale
@@ -355,7 +355,7 @@ docker run \
     -e OEREBLEX_CANTON="sh" \
     -e DUMMY_OFFICE_NAME="DUMMYOFFICE" \
     -e DUMMY_OFFICE_URL="https://google.ch" \
-    mgdm2oereb-transformator:latest make clean clean_oereblex_xml mgdm2oereb-oereblex 
+    mgdm2oereb-transformator:latest make clean clean_oereblex_xml mgdm2oereb-oereblex validate 
 ```
 
 ### v1.2
@@ -373,7 +373,7 @@ docker run \
     -e TARGET_BASKET_ID="ch.Grundwasserschutzareale" \
     -e XTF_FILE="ch.Planerischergewaesserschutz.sh.mgdm.v1_2.xtf" \
     -e CATALOG="ch.sh.OeREBKRMkvs_supplement.xml" \
-    mgdm2oereb-transformator:latest make clean mgdm2oereb
+    mgdm2oereb-transformator:latest make clean mgdm2oereb validate
 ```
 
 ## Waldreservate
@@ -393,7 +393,7 @@ docker run \
     -e TARGET_BASKET_ID="ch.Waldreservate" \
     -e XTF_FILE="ch.Waldreservate.sh.mgdm.v1_2.xtf" \
     -e CATALOG="ch.sh.OeREBKRMkvs_supplement.xml" \
-    mgdm2oereb-transformator:latest make clean mgdm2oereb
+    mgdm2oereb-transformator:latest make clean mgdm2oereb validate
 ```
 
 ### v1.2 ÖREBlex
@@ -415,7 +415,7 @@ docker run \
     -e OEREBLEX_CANTON="sh" \
     -e DUMMY_OFFICE_NAME="DUMMYOFFICE" \
     -e DUMMY_OFFICE_URL="https://google.ch" \
-    mgdm2oereb-transformator:latest make clean clean_oereblex_xml mgdm2oereb-oereblex
+    mgdm2oereb-transformator:latest make clean clean_oereblex_xml mgdm2oereb-oereblex validate
 ```
 
 ## Gewässerraum
@@ -424,6 +424,8 @@ docker run \
 
 #### SH
 
+
+Aktuell funktioniert aktuell nicht, da die ÖREBlexdaten kaputt sind.
 ```bash
 docker run \
     --rm \
@@ -439,7 +441,7 @@ docker run \
     -e OEREBLEX_CANTON="sh" \
     -e DUMMY_OFFICE_NAME="DUMMYOFFICE" \
     -e DUMMY_OFFICE_URL="https://google.ch" \
-    mgdm2oereb-transformator:latest make clean clean_oereblex_xml mgdm2oereb-oereblex
+    mgdm2oereb-transformator:latest make clean clean_oereblex_xml mgdm2oereb-oereblex validate
 ```
 
 ### v1.1
@@ -457,5 +459,5 @@ docker run \
     -e TARGET_BASKET_ID="ch.Gewaesserraum" \
     -e XTF_FILE="ch.Gewaesserraum.sh.mgdm.v1_1.xtf" \
     -e CATALOG="ch.sh.OeREBKRMkvs_supplement.xml" \
-    mgdm2oereb-transformator:latest make clean mgdm2oereb
+    mgdm2oereb-transformator:latest make clean mgdm2oereb validate
 ```
