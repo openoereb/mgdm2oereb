@@ -415,7 +415,7 @@ docker run \
     -e OEREBLEX_CANTON="sh" \
     -e DUMMY_OFFICE_NAME="DUMMYOFFICE" \
     -e DUMMY_OFFICE_URL="https://google.ch" \
-    mgdm2oereb-transformator:latest make clean clean_oereblex_xml mgdm2oereb-oereblex validate
+    mgdm2oereb-transformator:latest make clean mgdm2oereb-oereblex validate
 ```
 
 ## Gewässerraum
