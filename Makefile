@@ -4,6 +4,7 @@ XTF_PATH=data/$(XTF_FILE)
 CATALOG_PATH=$(shell pwd)/catalogs/$(CATALOG)
 OEREBLEX_XML=result/oereblex.xml
 
+.PHONY: mgdm2oereb-prepare-oereblex-docs-native
 mgdm2oereb-prepare-oereblex-docs-native: xsl/oereblex.download.py
 	XTF_PATH="$(XTF_PATH)" \
 	RESULT_FILE_PATH=$(OEREBLEX_XML) \
@@ -16,19 +17,20 @@ mgdm2oereb-prepare-oereblex-docs-native: xsl/oereblex.download.py
 	DUMMY_OFFICE_URL="$(DUMMY_OFFICE_URL)" \
 	python3 $^
 
-mgdm2oereb-prepare-oereblex-docs-geolink2oereb: xsl/geolink2oereb.py
+.PHONY: mgdm2oereb-prepare-oereblex-docs-geolink2oereb
+mgdm2oereb-prepare-oereblex-docs-geolink2oereb: xsl/oereblex.geolink2oereb.py
 	XTF_PATH="$(XTF_PATH)" \
-	RESULT_FILE_PATH=$@ \
+	RESULT_FILE_PATH=$(OEREBLEX_XML) \
 	GEOLINK_LIST_TRAFO_PATH="xsl/$(MODEL).oereblex.geolink_list.xsl" \
 	OEREBLEX_HOST="$(OEREBLEX_HOST)" \
 	OEREBLEX_CANTON="$(OEREBLEX_CANTON)" \
 	THEME_CODE="$(THEME_CODE)" \
+	PYRAMID_OEREB_CONFIG_PATH="$(PYRAMID_OEREB_CONFIG_PATH)" \
+	SECTION="$(SECTION)" \
 	TARGET_BASKET_ID="$(TARGET_BASKET_ID)" \
 	DUMMY_OFFICE_NAME="$(DUMMY_OFFICE_NAME)" \
 	DUMMY_OFFICE_URL="$(DUMMY_OFFICE_URL)" \
 	python3 $^
-
-clean_oereblex_xml: result/oereblex.xml
 
 mgdm2oereb-oereblex: xsl/$(MODEL).oereblex.trafo.xsl
 	xsltproc \

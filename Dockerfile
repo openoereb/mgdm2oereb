@@ -1,6 +1,6 @@
 FROM ubuntu:22.04
 
-ARG GEOLINK2OEREB_VERSION="0.1.2"
+ARG GEOLINK2OEREB_VERSION="0.1.4"
 RUN apt update && \
     apt install -y xsltproc \
       default-jdk \
