@@ -2,6 +2,7 @@ import lxml.etree as ET
 import os
 import logging
 import base64
+from io import StringIO
 from geolink2oereb.transform import run, unify_gathered, assign_uuids
 
 loglevel_config = os.environ.get('LOG_LEVEL')
@@ -92,12 +93,20 @@ for child in transformed.getroot().getchildren():
 unique_dokumente, unique_aemter = unify_gathered(gathered)
 uuid_dokumente, uuid_aemter = assign_uuids(unique_dokumente, unique_aemter)
 for dokument in uuid_dokumente:
+    output = StringIO()
     dokument.set_TID(f'dokument_{dokument.TID}')
     dokument.ZustaendigeStelle.set_REF(f'amt_{dokument.ZustaendigeStelle.REF}')
-    result.append(str(dokument))
+    dokument.export(output, 0, namespacedef_=None)
+    strval = output.getvalue()
+    output.close()
+    result.append(strval)
 for amt in uuid_aemter:
+    output = StringIO()
     amt.set_TID(f'amt_{amt.TID}')
-    result.append(str(amt))
+    amt.export(output, 0, namespacedef_=None)
+    strval = output.getvalue()
+    output.close()
+    result.append(strval)
 mgdm_uuid_relation_xml_structure = []
 for key in mgdm_uuid_relation:
     mgdm_uuid_relation_xml_structure.append(f'<MgdmDoc REF="{key}">')
