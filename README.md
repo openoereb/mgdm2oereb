@@ -59,7 +59,7 @@ docker run \
     -e OEREBLEX_CANTON="sh" \
     -e DUMMY_OFFICE_NAME="DUMMYOFFICE" \
     -e DUMMY_OFFICE_URL="https://google.ch" \
-    mgdm2oereb-transformator:latest make clean clean_oereblex_xml mgdm2oereb-oereblex validate
+    mgdm2oereb-transformator:latest make clean mgdm2oereb-prepare-oereblex-docs-native mgdm2oereb-oereblex validate
 ```
 
 Be aware, that the packed test data might come out of sync to ÖREBlex. In this case download a newer Version
@@ -103,10 +103,20 @@ docker run \
     -e OEREBLEX_CANTON="gr" \
     -e DUMMY_OFFICE_NAME="DUMMYOFFICE" \
     -e DUMMY_OFFICE_URL="https://google.ch" \
-    mgdm2oereb-transformator:latest make clean clean_oereblex_xml mgdm2oereb-oereblex validate
+    mgdm2oereb-transformator:latest make clean mgdm2oereb-prepare-oereblex-docs-native mgdm2oereb-oereblex validate
 ```
 
 ##### geolink2oereb
+
+Possibility to run the extraction of ÖREBlex documents with known and tested tools 
+[pyramid_oereb](https://github.com/openoereb/pyramid_oereb) and 
+[geolinkformatter](https://github.com/openoereb/geolink_formatter).
+
+This saves a lot of configuration and takes all available and necessary languages into account.
+
+The usage is similar to the other implementations. The configuration is done by environment variables.
+
+A full example can be seen below:
 
 ```bash
 docker run \
@@ -115,16 +125,46 @@ docker run \
     -u $(id -u):$(id -g) \
     -v $(pwd):/app \
     -e MODEL="Planungszonen_V1_1" \
-    -e PYRAMID_OEREB_CONFIG_PATH="/app/config_gr.yaml" \
-    -e SECTION="pyramid_oereb" \
     -e THEME_CODE="ch.Planungszonen" \
     -e TARGET_BASKET_ID="ch.Planungszonen" \
     -e OEREBLEX_HOST="oereblex.gr.ch" \
     -e XTF_FILE="ch.Planungszonen.gr.mgdm_oereblex.v1_1.xtf" \
     -e CATALOG="ch.gr.OeREBKRMkvs_supplement.xml" \
+    -e PYRAMID_OEREB_CONFIG_PATH="/app/config_gr.yaml" \
+    -e SECTION="pyramid_oereb" \
+    -e SOURCE_CLASS_PATH="geolink2oereb.lib.interfaces.pyramid_oereb.OEREBlexSourceCustom" \
+    -e C2CTEMPLATE_STYLE="False" \
     mgdm2oereb-transformator:latest make clean mgdm2oereb-prepare-oereblex-docs-geolink2oereb mgdm2oereb-oereblex validate
 ```
 
+As you can see the call uses 4 additional environment variables:
+
+- PYRAMID_OEREB_CONFIG_PATH => The absolute path to the pyramid_oereb configuration file
+- SECTION (default: pyramid_oereb) => The section within the yaml file identifying the section where to find
+  the pyramid_oereb configuration
+- SOURCE_CLASS_PATH (default: geolink2oereb.lib.interfaces.pyramid_oereb.OEREBlexSourceCustom) => The source 
+  used to extract pyramid_oereb document records from ÖREBlex. This can be pointed to something else to
+  manipulate the behaviour (filtering of documents, adjustments of titles etc.). Be aware that the configured
+  class need to be in the python path of mgdm2oereb (so in this example installed inside the container).
+- C2CTEMPLATE_STYLE (default: False) => wether the C2C templating mechanism should be used or not.
+
+All environment variables with default values may be omitted. So a call might look like this:
+
+```bash
+docker run \
+    --rm \
+    -ti \
+    -u $(id -u):$(id -g) \
+    -v $(pwd):/app \
+    -e MODEL="Planungszonen_V1_1" \
+    -e THEME_CODE="ch.Planungszonen" \
+    -e TARGET_BASKET_ID="ch.Planungszonen" \
+    -e OEREBLEX_HOST="oereblex.gr.ch" \
+    -e XTF_FILE="ch.Planungszonen.gr.mgdm_oereblex.v1_1.xtf" \
+    -e CATALOG="ch.gr.OeREBKRMkvs_supplement.xml" \
+    -e PYRAMID_OEREB_CONFIG_PATH="/app/config_gr.yaml" \
+    mgdm2oereb-transformator:latest make clean mgdm2oereb-prepare-oereblex-docs-geolink2oereb mgdm2oereb-oereblex validate
+```
 
 **special test with empty zones (it should not output any legendentries nor view services**
 
@@ -143,7 +183,7 @@ docker run \
     -e OEREBLEX_CANTON="gr" \
     -e DUMMY_OFFICE_NAME="DUMMYOFFICE" \
     -e DUMMY_OFFICE_URL="https://google.ch" \
-    mgdm2oereb-transformator:latest make clean clean_oereblex_xml mgdm2oereb-oereblex validate
+    mgdm2oereb-transformator:latest make clean mgdm2oereb-prepare-oereblex-docs-native mgdm2oereb-oereblex validate
 ```
 
 #### SH
@@ -163,7 +203,7 @@ docker run \
     -e OEREBLEX_CANTON="sh" \
     -e DUMMY_OFFICE_NAME="DUMMYOFFICE" \
     -e DUMMY_OFFICE_URL="https://google.ch" \
-    mgdm2oereb-transformator:latest make clean clean_oereblex_xml mgdm2oereb-oereblex validate
+    mgdm2oereb-transformator:latest make clean mgdm2oereb-prepare-oereblex-docs-native mgdm2oereb-oereblex validate
 ```
 
 Frische Daten können hier heruntergeladen werden:
@@ -208,7 +248,7 @@ docker run \
     -e OEREBLEX_CANTON="sh" \
     -e DUMMY_OFFICE_NAME="DUMMYOFFICE" \
     -e DUMMY_OFFICE_URL="https://google.ch" \
-    mgdm2oereb-transformator:latest make clean clean_oereblex_xml mgdm2oereb-oereblex validate 
+    mgdm2oereb-transformator:latest make clean mgdm2oereb-prepare-oereblex-docs-native mgdm2oereb-oereblex validate 
 ```
 
 ### v1.2
@@ -250,7 +290,7 @@ docker run \
     -e OEREBLEX_CANTON="sh" \
     -e DUMMY_OFFICE_NAME="DUMMYOFFICE" \
     -e DUMMY_OFFICE_URL="https://google.ch" \
-    mgdm2oereb-transformator:latest make clean clean_oereblex_xml mgdm2oereb-oereblex validate 
+    mgdm2oereb-transformator:latest make clean mgdm2oereb-prepare-oereblex-docs-native mgdm2oereb-oereblex validate 
 ```
 
 ### v1.2
@@ -292,7 +332,7 @@ docker run \
     -e OEREBLEX_CANTON="sh" \
     -e DUMMY_OFFICE_NAME="DUMMYOFFICE" \
     -e DUMMY_OFFICE_URL="https://google.ch" \
-    mgdm2oereb-transformator:latest make clean clean_oereblex_xml mgdm2oereb-oereblex validate 
+    mgdm2oereb-transformator:latest make clean mgdm2oereb-prepare-oereblex-docs-native mgdm2oereb-oereblex validate 
 ```
 
 ### v1.2
@@ -334,7 +374,7 @@ docker run \
     -e OEREBLEX_CANTON="sh" \
     -e DUMMY_OFFICE_NAME="DUMMYOFFICE" \
     -e DUMMY_OFFICE_URL="https://google.ch" \
-    mgdm2oereb-transformator:latest make clean clean_oereblex_xml mgdm2oereb-oereblex validate 
+    mgdm2oereb-transformator:latest make clean mgdm2oereb-prepare-oereblex-docs-native mgdm2oereb-oereblex validate 
 ```
 
 ### v1.2
@@ -376,7 +416,7 @@ docker run \
     -e OEREBLEX_CANTON="sh" \
     -e DUMMY_OFFICE_NAME="DUMMYOFFICE" \
     -e DUMMY_OFFICE_URL="https://google.ch" \
-    mgdm2oereb-transformator:latest make clean clean_oereblex_xml mgdm2oereb-oereblex validate 
+    mgdm2oereb-transformator:latest make clean mgdm2oereb-prepare-oereblex-docs-native mgdm2oereb-oereblex validate 
 ```
 
 ### v1.2
@@ -462,7 +502,7 @@ docker run \
     -e OEREBLEX_CANTON="sh" \
     -e DUMMY_OFFICE_NAME="DUMMYOFFICE" \
     -e DUMMY_OFFICE_URL="https://google.ch" \
-    mgdm2oereb-transformator:latest make clean clean_oereblex_xml mgdm2oereb-oereblex validate
+    mgdm2oereb-transformator:latest make clean mgdm2oereb-prepare-oereblex-docs-native mgdm2oereb-oereblex validate
 ```
 
 ### v1.1

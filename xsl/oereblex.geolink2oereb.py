@@ -28,17 +28,19 @@ geolink_list_trafo_path = os.environ['GEOLINK_LIST_TRAFO_PATH']
 xtf_path = os.environ['XTF_PATH']
 result_file_path = os.environ['RESULT_FILE_PATH']
 oereb_lex_host = os.environ['OEREBLEX_HOST']
-dummy_office_name = os.environ['DUMMY_OFFICE_NAME']
-dummy_office_url = os.environ['DUMMY_OFFICE_URL']
 
 theme_code = os.environ['THEME_CODE']
 pyramid_oereb_config_path = os.environ['PYRAMID_OEREB_CONFIG_PATH']
 section = os.environ['SECTION']
-source_class_path = os.environ.get(
-    'SOURCE_CLASS_PATH',
-    'geolink2oereb.lib.interfaces.pyramid_oereb.OEREBlexSourceCustom'
-)
-c2ctemplate_style = os.environ.get('C2CTEMPLATE_STYLE', False)
+if section in ['', None]:
+    section = 'pyramid_oereb'
+source_class_path = os.environ['SOURCE_CLASS_PATH']
+if source_class_path in ['', None]:
+    source_class_path = 'geolink2oereb.lib.interfaces.pyramid_oereb.OEREBlexSourceCustom'
+c2ctemplate_style = os.environ['C2CTEMPLATE_STYLE']
+if c2ctemplate_style in ['', None, 'false', 'False']:
+    c2ctemplate_style = False
+
 
 def get_document_title(document):
     user_title = {}

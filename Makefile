@@ -23,13 +23,12 @@ mgdm2oereb-prepare-oereblex-docs-geolink2oereb: xsl/oereblex.geolink2oereb.py
 	RESULT_FILE_PATH=$(OEREBLEX_XML) \
 	GEOLINK_LIST_TRAFO_PATH="xsl/$(MODEL).oereblex.geolink_list.xsl" \
 	OEREBLEX_HOST="$(OEREBLEX_HOST)" \
-	OEREBLEX_CANTON="$(OEREBLEX_CANTON)" \
 	THEME_CODE="$(THEME_CODE)" \
 	PYRAMID_OEREB_CONFIG_PATH="$(PYRAMID_OEREB_CONFIG_PATH)" \
 	SECTION="$(SECTION)" \
+	SOURCE_CLASS_PATH="$(SOURCE_CLASS_PATH)" \
+	C2CTEMPLATE_STYLE="$(C2CTEMPLATE_STYLE)" \
 	TARGET_BASKET_ID="$(TARGET_BASKET_ID)" \
-	DUMMY_OFFICE_NAME="$(DUMMY_OFFICE_NAME)" \
-	DUMMY_OFFICE_URL="$(DUMMY_OFFICE_URL)" \
 	python3 $^
 
 mgdm2oereb-oereblex: xsl/$(MODEL).oereblex.trafo.xsl
