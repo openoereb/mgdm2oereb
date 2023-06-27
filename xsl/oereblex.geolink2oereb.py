@@ -1,5 +1,6 @@
 import lxml.etree as ET
 import os
+import uuid
 import logging
 import base64
 from io import StringIO
@@ -74,6 +75,7 @@ processed_geolink_ids = []
 result = ['<DATASECTION>']
 gathered = []
 mgdm_uuid_relation = {}
+unique_entities = {"amt": {}, "dokument": {}}
 for child in transformed.getroot().getchildren():
     if child.attrib['mgdm_geolink_id'] not in processed_geolink_ids:
         log.debug(f"processing geolink id {child.attrib['mgdm_geolink_id']}")
@@ -85,15 +87,26 @@ for child in transformed.getroot().getchildren():
             section, source_class_path=source_class_path,
             c2ctemplate_style=c2ctemplate_style
         )
-        dokumente = []
+        mgdm_uuid_relation[child.attrib['mgdm_doc_id']] = []
         for dokument, amt in oereb_dokumente_aemter:
-            dokumente.append(dokument)
-        mgdm_uuid_relation[child.attrib['mgdm_doc_id']] = dokumente
+            if unique_entities["dokument"].get(dokument.TID):
+                # we found an already added document
+                mgdm_uuid_relation[child.attrib['mgdm_doc_id']].append(
+                    unique_entities["dokument"][dokument.TID]
+                )
+            else:
+                unique_entities["dokument"][dokument.TID] = dokument
+                mgdm_uuid_relation[child.attrib['mgdm_doc_id']].append(dokument)
+            unique_entities["amt"][str(amt)] = amt
         gathered.extend(oereb_dokumente_aemter)
     else:
         log.debug(f"skipping geolink id {child.attrib['mgdm_geolink_id']}")
-unique_dokumente, unique_aemter = unify_gathered(gathered)
-uuid_dokumente, uuid_aemter = assign_uuids(unique_dokumente, unique_aemter)
+
+uuid_dokumente, uuid_aemter = assign_uuids(
+    [unique_entities["dokument"][key] for key in unique_entities["dokument"].keys()],
+    [unique_entities["amt"][key] for key in unique_entities["amt"].keys()]
+)
+
 for dokument in uuid_dokumente:
     output = StringIO()
     dokument.set_TID(f'dokument_{dokument.TID}')
@@ -113,10 +126,9 @@ mgdm_uuid_relation_xml_structure = []
 for key in mgdm_uuid_relation:
     mgdm_uuid_relation_xml_structure.append(f'<MgdmDoc REF="{key}">')
     for dokument in mgdm_uuid_relation[key]:
-        if dokument in uuid_dokumente:
-            mgdm_uuid_relation_xml_structure.append(
-                f'  <OereblexDoc REF="{uuid_dokumente[uuid_dokumente.index(dokument)].TID}"/>'
-            )
+        mgdm_uuid_relation_xml_structure.append(
+            f'  <OereblexDoc REF="{uuid_dokumente[uuid_dokumente.index(dokument)].TID}"/>'
+        )
     mgdm_uuid_relation_xml_structure.append('</MgdmDoc>')
 result.append('\n'.join(mgdm_uuid_relation_xml_structure))
 result.append('</DATASECTION>')
