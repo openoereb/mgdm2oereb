@@ -3,3 +3,5 @@ result
 !result/.gitkeep
 
 /.idea
+/config_gr.yaml
+__pycache__
