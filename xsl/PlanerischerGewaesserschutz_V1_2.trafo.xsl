@@ -2,7 +2,8 @@
     xmlns="http://www.interlis.ch/INTERLIS2.3"
     xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
     xmlns:ili="http://www.interlis.ch/INTERLIS2.3"
-    exclude-result-prefixes="ili"
+    xmlns:ext="http://exslt.org/common"
+    exclude-result-prefixes="ili ext"
     version="1.0">
     <xsl:output method="xml" indent="yes" encoding="UTF-8"/>
     <xsl:strip-space elements="*"/>
@@ -37,7 +38,7 @@
                 <OeREBKRMtrsfr_V2_0.Transferstruktur BID="{$target_basket_id}">
                     <xsl:apply-templates select="ili:PlanerischerGewaesserschutz_V1_2.GWSZonen" />
                     <xsl:apply-templates select="ili:PlanerischerGewaesserschutz_V1_2.TransferMetadaten/ili:PlanerischerGewaesserschutz_V1_2.TransferMetadaten.Amt"/>
-                    <xsl:call-template name="supplement"/>
+                    <!-- <xsl:call-template name="supplement"/>-->
                 </OeREBKRMtrsfr_V2_0.Transferstruktur>
             </DATASECTION>
         </TRANSFER>
@@ -48,14 +49,30 @@
             <xsl:when test="$theme_code='ch.Grundwasserschutzzonen'">
                 <xsl:apply-templates select="ili:PlanerischerGewaesserschutz_V1_2.GWSZonen.GWSZone"/>
                 <xsl:apply-templates select="ili:PlanerischerGewaesserschutz_V1_2.GWSZonen.RechtsvorschriftGWSZone"/>
+                <xsl:call-template name="status">
+                    <xsl:with-param name="nodes" select="//ili:PlanerischerGewaesserschutz_V1_2.GWSZonen.GWSZone"/>
+                </xsl:call-template>
+                <xsl:for-each select="//ili:PlanerischerGewaesserschutz_V1_2.GWSZonen.RechtsvorschriftGWSZone[not(ili:Rechtsvorschrift/@REF = preceding::*/ili:Rechtsvorschrift/@REF)]">
+                    <xsl:call-template name="dokument">
+                        <xsl:with-param name="dokument_ref" select="ili:Rechtsvorschrift/@REF"/>
+                    </xsl:call-template>
+                </xsl:for-each>
             </xsl:when>
             <xsl:when test="$theme_code='ch.Grundwasserschutzareale'">
                 <xsl:apply-templates select="ili:PlanerischerGewaesserschutz_V1_2.GWSZonen.GWSAreal"/>
                 <xsl:apply-templates select="ili:PlanerischerGewaesserschutz_V1_2.GWSZonen.RechtsvorschriftGWSAreal"/>
+                <xsl:call-template name="status">
+                    <xsl:with-param name="nodes" select="//ili:PlanerischerGewaesserschutz_V1_2.GWSZonen.GWSAreal"/>
+                </xsl:call-template>
+                <xsl:for-each select="//ili:PlanerischerGewaesserschutz_V1_2.GWSZonen.RechtsvorschriftGWSAreal[not(ili:Rechtsvorschrift/@REF = preceding::*/ili:Rechtsvorschrift/@REF)]">
+                    <xsl:call-template name="dokument">
+                        <xsl:with-param name="dokument_ref" select="ili:Rechtsvorschrift/@REF"/>
+                    </xsl:call-template>
+                </xsl:for-each>
             </xsl:when>
         </xsl:choose>
 
-        <xsl:apply-templates select="ili:PlanerischerGewaesserschutz_V1_2.GWSZonen.Dokument"/>
+        <!-- <xsl:apply-templates select="ili:PlanerischerGewaesserschutz_V1_2.GWSZonen.Dokument"/> -->
 
     </xsl:template>
 
@@ -171,30 +188,46 @@
         </xsl:if>
     </xsl:template>
 
-    <xsl:template name="supplement">
-        <xsl:for-each select="//ili:PlanerischerGewaesserschutz_V1_2.GWSZonen.Status/ili:Rechtsstatus[not(. = (../preceding-sibling::*/ili:Rechtsstatus))][text()!='provisorisch']">
-            <xsl:variable name="rechtsstatus" select="."/>
-            <xsl:comment> LOG
-                rechtsstatus="<xsl:value-of select="." />"
-            </xsl:comment>
-            <xsl:for-each select="$catalog_doc//ili:TRANSFER/ili:DATASECTION/ili:OeREBKRMlegdrst_V2_0.Transferstruktur/ili:OeREBKRMlegdrst_V2_0.Transferstruktur.LegendeEintrag[ili:Thema=$theme_code][contains(./ili:ArtCode, $rechtsstatus)]">
-                <OeREBKRMtrsfr_V2_0.Transferstruktur.LegendeEintrag TID="{./@TID}">
-                    <xsl:apply-templates select="node()" mode="copy-no-namespaces"/>
-                </OeREBKRMtrsfr_V2_0.Transferstruktur.LegendeEintrag>
-            </xsl:for-each>
-            <xsl:for-each select="$catalog_doc//ili:TRANSFER/ili:DATASECTION/ili:OeREBKRMlegdrst_V2_0.Transferstruktur/ili:OeREBKRMlegdrst_V2_0.Transferstruktur.LegendeEintrag[contains(./ili:ArtCode, $rechtsstatus)]/ili:DarstellungsDienst[not(@REF = (preceding::*/@REF))]">
-                <xsl:sort select="@REF"/>
+    <xsl:template name="status">
+        <xsl:param name="nodes"/>
+        <xsl:variable name="status_nodes" select="//ili:PlanerischerGewaesserschutz_V1_2.GWSZonen.Status[@TID=$nodes/ili:Status/@REF][ili:Rechtsstatus!='provisorisch']"/>
+        <xsl:variable name="status_nodes_count" select="count($status_nodes)"/>
+        <xsl:choose>
+            <xsl:when test="$status_nodes_count = 1">
+                <xsl:call-template name="supplement">
+                    <xsl:with-param name="status_node" select="$status_nodes"/>
+                </xsl:call-template>
+            </xsl:when>
+            <xsl:otherwise>
+                <xsl:for-each select="$status_nodes[not(ili:Rechtsstatus = preceding::*/ili:Rechtsstatus)]">
+                    <xsl:call-template name="supplement">
+                        <xsl:with-param name="status_node" select="."/>
+                    </xsl:call-template>
+                </xsl:for-each>
+            </xsl:otherwise>
+        </xsl:choose>
+    </xsl:template>
 
-                <xsl:variable name="darstellungsdienst_tid" select="@REF"/>
-                <xsl:variable name="darstellungsdienst_thema" select="../ili:Thema"/>
-                <xsl:if test="$theme_code = $darstellungsdienst_thema">
-                    <xsl:for-each select="$catalog_doc//ili:TRANSFER/ili:DATASECTION/ili:OeREBKRMlegdrst_V2_0.Transferstruktur/ili:OeREBKRMlegdrst_V2_0.Transferstruktur.DarstellungsDienst[@TID=$darstellungsdienst_tid]">
-                        <OeREBKRMtrsfr_V2_0.Transferstruktur.DarstellungsDienst TID="{$darstellungsdienst_tid}">
-                            <xsl:apply-templates select="node()" mode="copy-no-namespaces"/>
-                        </OeREBKRMtrsfr_V2_0.Transferstruktur.DarstellungsDienst>
-                    </xsl:for-each>
-                </xsl:if>
-            </xsl:for-each>
+    <xsl:template name="supplement">
+        <xsl:param name="status_node"/>
+        <xsl:variable name="rechtsstatus" select="$status_node/ili:Rechtsstatus"/>
+        <xsl:for-each select="$catalog_doc//ili:TRANSFER/ili:DATASECTION/ili:OeREBKRMlegdrst_V2_0.Transferstruktur/ili:OeREBKRMlegdrst_V2_0.Transferstruktur.LegendeEintrag[ili:Thema=$theme_code][contains(./ili:ArtCode, $rechtsstatus)]">
+            <OeREBKRMtrsfr_V2_0.Transferstruktur.LegendeEintrag TID="{./@TID}">
+                <xsl:apply-templates select="node()" mode="copy-no-namespaces"/>
+            </OeREBKRMtrsfr_V2_0.Transferstruktur.LegendeEintrag>
+        </xsl:for-each>
+        <xsl:for-each select="$catalog_doc//ili:TRANSFER/ili:DATASECTION/ili:OeREBKRMlegdrst_V2_0.Transferstruktur/ili:OeREBKRMlegdrst_V2_0.Transferstruktur.LegendeEintrag[contains(./ili:ArtCode, $rechtsstatus)]/ili:DarstellungsDienst[not(@REF = (preceding::*/@REF))]">
+            <xsl:sort select="@REF"/>
+
+            <xsl:variable name="darstellungsdienst_tid" select="@REF"/>
+            <xsl:variable name="darstellungsdienst_thema" select="../ili:Thema"/>
+            <xsl:if test="$theme_code = $darstellungsdienst_thema">
+                <xsl:for-each select="$catalog_doc//ili:TRANSFER/ili:DATASECTION/ili:OeREBKRMlegdrst_V2_0.Transferstruktur/ili:OeREBKRMlegdrst_V2_0.Transferstruktur.DarstellungsDienst[@TID=$darstellungsdienst_tid]">
+                    <OeREBKRMtrsfr_V2_0.Transferstruktur.DarstellungsDienst TID="{$darstellungsdienst_tid}">
+                        <xsl:apply-templates select="node()" mode="copy-no-namespaces"/>
+                    </OeREBKRMtrsfr_V2_0.Transferstruktur.DarstellungsDienst>
+                </xsl:for-each>
+            </xsl:if>
         </xsl:for-each>
     </xsl:template>
 
@@ -261,36 +294,40 @@
         </AmtImWeb>
     </xsl:template>
 
-    <xsl:template match="ili:PlanerischerGewaesserschutz_V1_2.GWSZonen/ili:PlanerischerGewaesserschutz_V1_2.GWSZonen.Dokument">
+    <xsl:template name="dokument">
+        <xsl:param name="dokument_ref"/>
+        <xsl:comment> LOG
+            dokument_ref="<xsl:value-of select="$dokument_ref"/>"
+        </xsl:comment>
         <!-- Laut Modelldokumentation Filterfunktion werden "provisorisch" elemente nicht übertragen - sind auch durch OeREBKRMtrsfr_V2_0 nicht unterstützt -->
-        <xsl:if test="./ili:Rechtsstatus!='provisorisch'">
-            <xsl:variable name="mgdm_dokument_tid" select="@TID"/>
-            <!-- Reference to Baske ID-->
-            <xsl:variable name="basket_id" select="../@BID"/>
-            <!-- comment, safe to delete:
-            <xsl:comment> LOG
-                mgdm_dokument_tid="<xsl:value-of select="$mgdm_dokument_tid" />"
-                mgdm_typ_ref="<xsl:value-of select="$mgdm_typ_ref" />"
-                mgdm_basket_id="<xsl:value-of select="$mgdm_basket_id" />"
-                mgdm_amt="<xsl:value-of select="$mgdm_amt" />"
-            </xsl:comment>
-            -->
-            <OeREBKRM_V2_0.Dokumente.Dokument TID="dokument_{$mgdm_dokument_tid}">
-                <xsl:apply-templates select="./ili:Rechtsstatus" mode="copy-no-namespaces"/>
-                <xsl:apply-templates select="./ili:AuszugIndex" mode="copy-no-namespaces"/>
-                <xsl:apply-templates select="./ili:publiziertAb" mode="copy-no-namespaces"/>
-                <xsl:apply-templates select="./ili:OffizielleNr" mode="copy-no-namespaces"/>
-                <xsl:apply-templates select="./ili:Abkuerzung" mode="copy-no-namespaces"/>
-                <xsl:apply-templates select="./ili:Titel" mode="copy-no-namespaces"/>
-                <xsl:apply-templates select="./ili:Typ" mode="copy-no-namespaces"/>
-                <TextImWeb>
-                    <xsl:apply-templates select="ili:TextImWeb/ili:PlanerischerGewaesserschutz_V1_2.MultilingualUri"/>
-                </TextImWeb>
-                <xsl:call-template name="zustaendige_stelle">
-                    <xsl:with-param name="basket_id" select="$basket_id"/>
-                </xsl:call-template>
-            </OeREBKRM_V2_0.Dokumente.Dokument>
-        </xsl:if>
+        <xsl:variable name="dokument_node" select="//ili:PlanerischerGewaesserschutz_V1_2.GWSZonen.Dokument[@TID=$dokument_ref][ili:Rechtsstatus!='provisorisch']"/>
+
+        <xsl:variable name="mgdm_dokument_tid" select="$dokument_node/@TID"/>
+        <!-- Reference to Baske ID-->
+        <xsl:variable name="basket_id" select="$dokument_node/../@BID"/>
+        <!-- comment, safe to delete:
+        <xsl:comment> LOG
+            mgdm_dokument_tid="<xsl:value-of select="$mgdm_dokument_tid" />"
+            mgdm_typ_ref="<xsl:value-of select="$mgdm_typ_ref" />"
+            mgdm_basket_id="<xsl:value-of select="$mgdm_basket_id" />"
+            mgdm_amt="<xsl:value-of select="$mgdm_amt" />"
+        </xsl:comment>
+        -->
+        <OeREBKRM_V2_0.Dokumente.Dokument TID="dokument_{$dokument_node/@TID}">
+            <xsl:apply-templates select="$dokument_node/ili:Rechtsstatus" mode="copy-no-namespaces"/>
+            <xsl:apply-templates select="$dokument_node/ili:AuszugIndex" mode="copy-no-namespaces"/>
+            <xsl:apply-templates select="$dokument_node/ili:publiziertAb" mode="copy-no-namespaces"/>
+            <xsl:apply-templates select="$dokument_node/ili:OffizielleNr" mode="copy-no-namespaces"/>
+            <xsl:apply-templates select="$dokument_node/ili:Abkuerzung" mode="copy-no-namespaces"/>
+            <xsl:apply-templates select="$dokument_node/ili:Titel" mode="copy-no-namespaces"/>
+            <xsl:apply-templates select="$dokument_node/ili:Typ" mode="copy-no-namespaces"/>
+            <TextImWeb>
+                <xsl:apply-templates select="$dokument_node/ili:TextImWeb/ili:PlanerischerGewaesserschutz_V1_2.MultilingualUri"/>
+            </TextImWeb>
+            <xsl:call-template name="zustaendige_stelle">
+                <xsl:with-param name="basket_id" select="$basket_id"/>
+            </xsl:call-template>
+        </OeREBKRM_V2_0.Dokumente.Dokument>
 
     </xsl:template>
     <xsl:template match="ili:PlanerischerGewaesserschutz_V1_2.GWSZonen/ili:PlanerischerGewaesserschutz_V1_2.GWSZonen.RechtsvorschriftGWSZone">
