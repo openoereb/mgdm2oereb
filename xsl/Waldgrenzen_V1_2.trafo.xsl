@@ -187,7 +187,7 @@
             <xsl:apply-templates select="./ili:Titel" mode="copy-no-namespaces"/>
             <xsl:apply-templates select="./ili:Typ" mode="copy-no-namespaces"/>
             <TextImWeb>
-                <xsl:apply-templates select="ili:TextImWeb/ili:Nutzungsplanung_V1_2.MultilingualUri"/>
+                <xsl:apply-templates select="ili:TextImWeb/ili:Waldgrenzen_V1_2.MultilingualUri"/>
             </TextImWeb>
             <ZustaendigeStelle REF="AMT_{$mgdm_amt}"/> <!-- TODO test correct $mgdm_amt on more test data -->
         </OeREBKRM_V2_0.Dokumente.Dokument>
