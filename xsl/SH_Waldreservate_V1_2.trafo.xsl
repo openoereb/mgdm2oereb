@@ -173,7 +173,7 @@
             <xsl:apply-templates select="./ili:Titel" mode="copy-no-namespaces"/>
             <xsl:apply-templates select="./ili:Typ" mode="copy-no-namespaces"/>
             <TextImWeb>
-                <xsl:apply-templates select="ili:TextImWeb/ili:SH_Waldreservate_V1_2.MultilingualUri"/>
+                <xsl:apply-templates select="ili:TextImWeb/ili:SH_Waldreservate_V1_2.Waldreservate.MultilingualUri"/>
             </TextImWeb>
             <ZustaendigeStelle REF="AMT_{$distinct_mgdm_amt}"/>
         </OeREBKRM_V2_0.Dokumente.Dokument>
