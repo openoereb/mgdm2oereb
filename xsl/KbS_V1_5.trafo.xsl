@@ -113,7 +113,7 @@
                         mode="copy-no-namespaces"/>
             </Name>
             <AmtImWeb>
-                <xsl:apply-templates select="./ili:URL_Kataster/ili:KbS_V1_5.Belastete_Standorte.MultilingualUri"/>
+                <xsl:apply-templates select="./ili:URL_Behoerde/ili:KbS_V1_5.Belastete_Standorte.MultilingualUri"/>
             </AmtImWeb>
         </OeREBKRM_V2_0.Amt.Amt>
     </xsl:template>
