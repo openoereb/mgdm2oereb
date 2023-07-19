@@ -140,6 +140,13 @@
         <OeREBKRM_V2_0.Amt.Amt TID="AMT_{./@TID}">
             <xsl:apply-templates select="ili:Name" mode="copy-no-namespaces"/>
             <xsl:apply-templates select="ili:AmtImWeb"/>
+            <xsl:apply-templates select="ili:UID" mode="copy-no-namespaces"/>
+            <xsl:apply-templates select="ili:Zeile1" mode="copy-no-namespaces"/>
+            <xsl:apply-templates select="ili:Zeile2" mode="copy-no-namespaces"/>
+            <xsl:apply-templates select="ili:Strasse" mode="copy-no-namespaces"/>
+            <xsl:apply-templates select="ili:Hausnr" mode="copy-no-namespaces"/>
+            <xsl:apply-templates select="ili:PLZ" mode="copy-no-namespaces"/>
+            <xsl:apply-templates select="ili:Ort" mode="copy-no-namespaces"/>
         </OeREBKRM_V2_0.Amt.Amt>
     </xsl:template>
 

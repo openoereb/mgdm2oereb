@@ -439,24 +439,6 @@ docker run \
 
 ## Waldreservate
 
-### v1.2
-
-#### SH
-
-```bash
-docker run \
-    --rm \
-    -ti \
-    -u $(id -u):$(id -g) \
-    -v $(pwd):/app \
-    -e MODEL="SH_Waldreservate_V1_2" \
-    -e THEME_CODE="ch.Waldreservate" \
-    -e TARGET_BASKET_ID="ch.Waldreservate" \
-    -e XTF_FILE="ch.Waldreservate.sh.mgdm.v1_2.xtf" \
-    -e CATALOG="ch.sh.OeREBKRMkvs_supplement.xml" \
-    mgdm2oereb-transformator:latest make clean mgdm2oereb validate
-```
-
 ### v1.2 ÖREBlex
 
 #### SH
@@ -477,6 +459,24 @@ docker run \
     -e DUMMY_OFFICE_NAME="DUMMYOFFICE" \
     -e DUMMY_OFFICE_URL="https://google.ch" \
     mgdm2oereb-transformator:latest make clean mgdm2oereb-oereblex validate
+```
+
+### v1.2
+
+#### SH
+
+```bash
+docker run \
+    --rm \
+    -ti \
+    -u $(id -u):$(id -g) \
+    -v $(pwd):/app \
+    -e MODEL="SH_Waldreservate_V1_2" \
+    -e THEME_CODE="ch.Waldreservate" \
+    -e TARGET_BASKET_ID="ch.Waldreservate" \
+    -e XTF_FILE="ch.Waldreservate.sh.mgdm.v1_2.xtf" \
+    -e CATALOG="ch.sh.OeREBKRMkvs_supplement.xml" \
+    mgdm2oereb-transformator:latest make clean mgdm2oereb validate
 ```
 
 ## Gewässerraum
