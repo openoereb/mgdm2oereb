@@ -188,6 +188,11 @@
             <AuszugIndex>1</AuszugIndex>
             <!-- Die Reihenfolge OR Verknüpfung hier wurde einfach aus der Modelldokumentation -> Filterfunktion übernommen -->
             <xsl:choose>
+                <xsl:when test="$standort_node/ili:URL_KbS_Auszug">
+                    <TextImWeb>
+                        <xsl:apply-templates select="$standort_node/ili:URL_KbS_Auszug/ili:KbS_V1_5.Belastete_Standorte.MultilingualUri"/>
+                    </TextImWeb>
+                </xsl:when>
                 <xsl:when test="$standort_node/ili:URL_Standort">
                     <TextImWeb>
                         <xsl:apply-templates select="$standort_node/ili:URL_Standort/ili:KbS_V1_5.Belastete_Standorte.MultilingualUri"/>
@@ -196,11 +201,6 @@
                 <xsl:when test="$zustaendigkeit_node/ili:URL_Kataster">
                     <TextImWeb>
                         <xsl:apply-templates select="$zustaendigkeit_node/ili:URL_Kataster/ili:KbS_V1_5.Belastete_Standorte.MultilingualUri"/>
-                    </TextImWeb>
-                </xsl:when>
-                <xsl:when test="$standort_node/ili:URL_KbS_Auszug">
-                    <TextImWeb>
-                        <xsl:apply-templates select="$standort_node/ili:URL_KbS_Auszug/ili:KbS_V1_5.Belastete_Standorte.MultilingualUri"/>
                     </TextImWeb>
                 </xsl:when>
             </xsl:choose>
