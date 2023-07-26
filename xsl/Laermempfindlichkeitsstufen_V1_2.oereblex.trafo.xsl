@@ -116,6 +116,7 @@
     </xsl:template>
 
     <xsl:template name="legende_darstellungsdienst">
+        <!-- TODO: Umbau so wie bei nicht-oereb-lex-->
         <xsl:param name="typ_ref_id"/> <!-- WG Typ referenced from Waldgrenze_Linie -->
         <xsl:param name="rechtsstatus"/>
         <xsl:variable name="typ_artcode" select="concat(../ili:Laermempfindlichkeitsstufen_V1_2.Geobasisdaten.Typ[@TID=$typ_ref_id]/ili:Code, '_', $rechtsstatus)" /> <!-- 0 = ausserhalb_Bauzonen, 1 = in_Bauzonen -->
