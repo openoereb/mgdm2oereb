@@ -112,7 +112,7 @@
     <xsl:template name="legende_darstellungsdienst">
         <xsl:param name="typ_node"/>
         <xsl:param name="rechtsstatus"/>
-        <xsl:variable name="typ_artcode" select="concat($typ_node/ili:Code, '_', $rechtsstatus)" />
+        <xsl:variable name="typ_artcode" select="concat($typ_node/ili:Code, '_', $typ_node/ili:Aufgestuft, '_',$rechtsstatus)" />
 
 
         <!--<xsl:comment> LOG
