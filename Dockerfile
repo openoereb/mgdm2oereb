@@ -23,6 +23,6 @@ RUN curl -o /tmp/ilivalidator-${ILIVALIDATOR_VERSION}.zip https://downloads.inte
     rm -rf /tmp/ilivalidator-${ILIVALIDATOR_VERSION}.zip
 
 ARG GEOLINK2OEREB_VERSION="0.1.9"
-RUN pip install geolink2oereb[recommend]==${GEOLINK2OEREB_VERSION} c2c.template==2.3.0
+RUN pip install geolink2oereb[recommend]==${GEOLINK2OEREB_VERSION} c2c.template==2.3.0 numpy==1.26.4
 
 WORKDIR /app

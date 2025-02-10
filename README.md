@@ -269,6 +269,20 @@ docker run \
     mgdm2oereb-transformator:latest make clean mgdm2oereb validate
 ```
 
+```bash
+docker run \
+    --rm \
+    -ti \
+    -u $(id -u):$(id -g) \
+    -v $(pwd):/app \
+    -e MODEL="Nutzungsplanung_V1_2" \
+    -e THEME_CODE="ch.Nutzungsplanung" \
+    -e TARGET_BASKET_ID="ch.tha.Nutzungsplanung" \
+    -e XTF_FILE="sha_nutzungsplanung_v1_2.xtf" \
+    -e CATALOG="ch.sh.OeREBKRMkvs_supplement.xml" \
+    mgdm2oereb-transformator:latest make clean mgdm2oereb validate
+```
+
 ## Statische Waldgrenzen
 
 ### v1.2 ÖREBlex
