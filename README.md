@@ -493,6 +493,23 @@ docker run \
     mgdm2oereb-transformator:latest make clean mgdm2oereb validate
 ```
 
+### v2.0
+
+#### SH
+
+```shell
+docker run \
+    --rm \
+    -ti \
+    -u $(id -u):$(id -g) \
+    -v $(pwd):/app \
+    -e MODEL="Waldreservate_V2_0" \
+    -e THEME_CODE="ch.Waldreservate" \
+    -e TARGET_BASKET_ID="ch.Waldreservate" \
+    -e XTF_FILE="ch.Waldreservate.v2_0.sh.mgdm.xtf" \
+    -e CATALOG="ch.sh.OeREBKRMkvs_supplement.xml" \
+    mgdm2oereb-transformator:latest make clean mgdm2oereb validate
+```
 ## Gewässerraum
 
 ### v1.1 ÖREBlex
